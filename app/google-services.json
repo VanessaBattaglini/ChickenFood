@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "435903794761",
+    "firebase_url": "https://chickenfood-b5459-default-rtdb.firebaseio.com",
+    "project_id": "chickenfood-b5459",
+    "storage_bucket": "chickenfood-b5459.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435903794761:android:a6f748a4c1498a13be7998",
+        "android_client_info": {
+          "package_name": "com.daniel.chickenfood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACZUj4PZMqmcJQ19OvB3SpFo55iXXEgSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
