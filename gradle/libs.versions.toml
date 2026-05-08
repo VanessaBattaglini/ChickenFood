@@ -13,6 +13,9 @@ coilCompose = "2.6.0"
 koin = "4.2.0"
 koinCompose = "4.2.0"
 crashlyticsPlugin = "3.0.7"
+appcompat = "1.7.1"
+material = "1.13.0"
+activity = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +59,9 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 # DI
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinCompose" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
