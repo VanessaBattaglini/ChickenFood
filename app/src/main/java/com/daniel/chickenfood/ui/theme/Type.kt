@@ -2,20 +2,37 @@ package com.daniel.chickenfood.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.daniel.chickenfood.R
 
-// Set of Material typography styles to start with
+// Fuente personalizada
+val Playwrite = FontFamily(
+    Font(
+        R.font.playwrite_ar_guides_regular,
+        FontWeight.Normal
+    )
+)
+
+// Typography
 val Typography = Typography(
+
+    headlineLarge = TextStyle(
+        fontFamily = Playwrite,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp
+    ),
+
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 16.sp
     )
-    /* Other default text styles to override
+)
+    /* Other default
+     text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -32,3 +49,6 @@ val Typography = Typography(
     )
     */
 )
+
+
+
