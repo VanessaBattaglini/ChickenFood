@@ -49,7 +49,7 @@ fun GetStartedButtons(
 
             Text(
                 text = "Inscríbete",
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color.White
             )
         }

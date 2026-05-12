@@ -1,7 +1,6 @@
 package com.daniel.chickenfood.ui.activity.splash
 
-import android.R.attr.logo
-import android.R.attr.onClick
+import android.R.attr.fontFamily
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -15,9 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,8 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.daniel.chickenfood.MainActivity
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.ui.activity.BaseActivity
-import com.google.common.io.Files.append
-import kotlin.jvm.java
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,7 +82,7 @@ fun SplashScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 24.dp, vertical = 55.dp)
+                .padding(horizontal = 24.dp, vertical = 85.dp)
         ){
             val styledText = buildAnnotatedString {
 
@@ -115,13 +111,14 @@ fun SplashScreen(
             Text(
                 text = stringResource(R.string.subSubtitle),
                 fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
+                fontFamily = FontFamily(Font(R.font.playwrite_ar_guides_regular)),
+                color = Color.Yellow.copy(alpha = 3.8f),
                 lineHeight = 24.sp
             )
 
             GetStartedButtons(onSignUpClick = {},
                 onGetStartedClick = {},
-                modifier = Modifier.padding(top = 16.dp))
+                modifier = Modifier.padding(top = 30.dp))
         }
     }
 }
