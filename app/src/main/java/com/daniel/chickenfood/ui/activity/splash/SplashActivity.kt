@@ -1,6 +1,5 @@
 package com.daniel.chickenfood.ui.activity.splash
 
-import android.R.attr.fontFamily
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -116,9 +115,11 @@ fun SplashScreen(
                 lineHeight = 24.sp
             )
 
-            GetStartedButtons(onSignUpClick = {},
-                onGetStartedClick = {},
-                modifier = Modifier.padding(top = 30.dp))
+            GetStartedButtons(
+                onSignUpClick = {},
+                onGetStartedClick = onGetStartedClick,
+                modifier = Modifier.padding(top = 30.dp)
+            )
         }
     }
 }

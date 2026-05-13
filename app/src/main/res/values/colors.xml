@@ -18,6 +18,7 @@
     <color name="darkPurple">#FF2E4058</color>
     <color name="lightOrange">#FFFEF4E5</color>
     <color name="grey">#FFECECEC</color>
+    <color name="darkGray">#FF1E1E1E</color>
 
 
 </resources>
