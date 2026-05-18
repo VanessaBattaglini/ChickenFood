@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.ui.activity
+package com.daniel.chickenfood.presentation.activity
 
 import android.os.Bundle
 import android.view.WindowManager

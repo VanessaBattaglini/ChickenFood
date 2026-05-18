@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.ui.activity.splash
+package com.daniel.chickenfood.presentation.activity.splash
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.ui.activity.dashboard
+package com.daniel.chickenfood.presentation.activity.dashboard
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon

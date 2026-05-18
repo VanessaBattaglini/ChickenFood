@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.ui.activity.dashboard
+package com.daniel.chickenfood.presentation.activity.dashboard
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.ui.activity.splash
+package com.daniel.chickenfood.presentation.activity.splash
 
 import android.content.Intent
 import android.os.Bundle
@@ -31,9 +31,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.daniel.chickenfood.MainActivity
+import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
 import com.daniel.chickenfood.R
-import com.daniel.chickenfood.ui.activity.BaseActivity
+import com.daniel.chickenfood.presentation.activity.BaseActivity
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +81,7 @@ fun SplashScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 24.dp, vertical = 85.dp)
+                .padding(horizontal = 24.dp, vertical = 65.dp)
         ){
             val styledText = buildAnnotatedString {
 
@@ -94,10 +94,8 @@ fun SplashScreen(
                 ) {
                     append("cada comida en")
                 }
-
                 append("\nun crujiente placer")
             }
-
             Text(
                 text = styledText,
                 fontSize = 32.sp,
@@ -114,7 +112,6 @@ fun SplashScreen(
                 color = Color.Yellow.copy(alpha = 3.8f),
                 lineHeight = 24.sp
             )
-
             GetStartedButtons(
                 onSignUpClick = {},
                 onGetStartedClick = onGetStartedClick,
