@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,6 +21,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.presentation.activity.BaseActivity
+import com.daniel.chickenfood.presentation.viewModel.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : BaseActivity() {
 
@@ -33,10 +36,17 @@ class MainActivity : BaseActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    viewModel: MainViewModel = koinViewModel()
+) {
+    val banners by viewModel.banners.collectAsState()
     var selectedItem by rememberSaveable {
         mutableStateOf("Home")
     }
+
+    val categories by viewModel.categories.collectAsState()
+    val isLoadingCategories by viewModel.isLoadingCategories.collectAsState()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = colorResource(R.color.darkBrown),
@@ -65,8 +75,20 @@ fun MainScreen() {
             item {
                 SearchBar()
             }
-
+            item {
+                Banner(
+                    banners = banners,
+                    isLoading = banners.isEmpty()
+                )
+            }
+            item {
+                CategorySection(
+                    categories = categories,
+                    isLoading = isLoadingCategories,
+                    onCategoryClick = {
+                    }
+                )
+            }
         }
     }
 }
-

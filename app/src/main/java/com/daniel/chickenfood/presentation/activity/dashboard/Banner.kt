@@ -1,4 +1,4 @@
-package com.daniel.chickenfood.presentation.components
+package com.daniel.chickenfood.presentation.activity.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ import com.daniel.chickenfood.domain.model.BannerModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun BannerSection(
+fun Banner(
     banners: List<BannerModel>,
     isLoading: Boolean
 ) {
@@ -55,9 +55,10 @@ fun BannerCarousel(
     LaunchedEffect(Unit) {
         while (true) {
             delay(3000)
-            val nextPage =
-                (pagerState.currentPage + 1) % banners.size
-            pagerState.animateScrollToPage(nextPage)
+            if (banners.isNotEmpty()) {
+                val nextPage = (pagerState.currentPage + 1) % banners.size
+                pagerState.animateScrollToPage(nextPage)
+            }
         }
     }
     Column(

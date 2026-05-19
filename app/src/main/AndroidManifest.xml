@@ -15,9 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChickenFood">
+
         <activity
             android:name=".presentation.activity.BaseActivity"
             android:exported="false" />
+
         <activity
             android:name=".presentation.activity.splash.SplashActivity"
             android:exported="true"
@@ -27,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".presentation.activity.dashboard.MainActivity"
             android:exported="false"
