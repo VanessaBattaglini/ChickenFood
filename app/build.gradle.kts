@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.ui)
     implementation(libs.gson)
+    implementation(libs.androidx.constraintlayout)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

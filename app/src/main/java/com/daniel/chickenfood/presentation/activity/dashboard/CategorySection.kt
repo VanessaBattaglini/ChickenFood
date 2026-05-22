@@ -1,10 +1,9 @@
 package com.daniel.chickenfood.presentation.activity.dashboard
 
+import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,14 +24,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -102,6 +101,7 @@ fun CategorySection(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CategoryItem(
     category: CategoryModel,
@@ -144,21 +144,18 @@ fun CategoryItem(
                 color = Color.Black.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(28.dp)
             )
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        when (event.type) {
-                            PointerEventType.Press -> {
-                                isPressed = true
-                                onClick()
-                            }
-                            PointerEventType.Release -> {
-                                isPressed = false
-                            }
-                            else -> {}
-                        }
+            .pointerInteropFilter { event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        isPressed = true
+                        true
                     }
+                    MotionEvent.ACTION_UP -> {
+                        isPressed = false
+                        onClick()
+                        true
+                    }
+                    else -> false
                 }
             }
             .scale(scale)
@@ -194,4 +191,3 @@ fun CategoryItem(
         )
     }
 }
-

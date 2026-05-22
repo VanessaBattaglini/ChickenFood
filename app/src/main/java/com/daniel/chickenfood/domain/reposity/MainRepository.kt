@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface MainRepository {
     fun loadBanner(): Flow<List<BannerModel>>
     fun loadCategory(): Flow<List<CategoryModel>>
-    //fun loadFiltered(categoryId: String): Flow<List<FoodModel>>
+    fun loadFiltered(categoryId: String): Flow<List<FoodModel>>
 }

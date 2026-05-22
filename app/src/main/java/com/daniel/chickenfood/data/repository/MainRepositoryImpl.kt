@@ -3,6 +3,7 @@ package com.daniel.chickenfood.data.repository
 import com.daniel.chickenfood.domain.reposity.MainRepository
 import com.daniel.chickenfood.domain.model.BannerModel
 import com.daniel.chickenfood.domain.model.CategoryModel
+import com.daniel.chickenfood.domain.model.FoodModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -61,5 +62,34 @@ class MainRepositoryImpl(
         }
         ref.addValueEventListener(listener)
         awaitClose { ref.removeEventListener(listener) }
+    }
+    override fun loadFiltered(
+        categoryId: String
+    ): Flow<List<FoodModel>> = callbackFlow {
+        val query = firebaseDatabase
+            .getReference("foods")
+            .orderByChild("categoryId")
+            .equalTo(categoryId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(
+                snapshot: DataSnapshot
+            ) {
+                val foods = snapshot.children.mapNotNull {
+                    it.getValue(FoodModel::class.java)
+                }
+                trySend(foods)
+            }
+            override fun onCancelled(
+                error: DatabaseError
+            ) {
+                close(error.toException())
+            }
+        }
+
+        query.addValueEventListener(listener)
+
+        awaitClose {
+            query.removeEventListener(listener)
+        }
     }
 }
