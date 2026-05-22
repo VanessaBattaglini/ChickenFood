@@ -25,13 +25,14 @@ import kotlinx.coroutines.delay
 @Composable
 fun Banner(
     banners: List<BannerModel>,
-    isLoading: Boolean
+    isLoading: Boolean,
+    height: Int = 200
 ) {
     if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp),
+                .height(height.dp),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
@@ -40,17 +41,21 @@ fun Banner(
         }
     } else {
         BannerCarousel(
-            banners = banners
+            banners = banners,
+            height = height
         )
     }
 }
+
 @Composable
 fun BannerCarousel(
-    banners: List<BannerModel>
+    banners: List<BannerModel>,
+    height: Int = 200
 ) {
     val pagerState = rememberPagerState(
         pageCount = { banners.size }
     )
+    
     // Auto Slide
     LaunchedEffect(Unit) {
         while (true) {
@@ -61,6 +66,7 @@ fun BannerCarousel(
             }
         }
     }
+    
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -68,21 +74,29 @@ fun BannerCarousel(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(banners[page].image)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Banner",
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(height.dp)
                     .clip(RoundedCornerShape(20.dp))
-            )
+                    .background(colorResource(R.color.grey))
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(banners[page].image)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Banner ${page + 1}",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
+        
         Spacer(modifier = Modifier.height(12.dp))
+        
+        // Indicadores
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -92,10 +106,7 @@ fun BannerCarousel(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
                         .size(
-                            if (pagerState.currentPage == index)
-                                10.dp
-                            else
-                                8.dp
+                            if (pagerState.currentPage == index) 10.dp else 8.dp
                         )
                         .clip(CircleShape)
                         .background(
@@ -109,4 +120,5 @@ fun BannerCarousel(
         }
     }
 }
+
 
