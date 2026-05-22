@@ -1,7 +1,7 @@
 package com.daniel.chickenfood.di
 
 import com.daniel.chickenfood.data.repository.MainRepositoryImpl
-import com.daniel.chickenfood.domain.MainRepository
+import com.daniel.chickenfood.domain.reposity.MainRepository
 import com.daniel.chickenfood.presentation.viewModel.MainViewModel
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson

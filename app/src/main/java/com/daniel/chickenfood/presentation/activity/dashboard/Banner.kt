@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 fun Banner(
     banners: List<BannerModel>,
     isLoading: Boolean,
-    height: Int = 200
+    height: Int = 260
 ) {
     if (isLoading) {
         Box(

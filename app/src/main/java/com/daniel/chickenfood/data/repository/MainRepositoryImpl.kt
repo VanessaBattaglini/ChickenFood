@@ -1,6 +1,6 @@
 package com.daniel.chickenfood.data.repository
 
-import com.daniel.chickenfood.domain.MainRepository
+import com.daniel.chickenfood.domain.reposity.MainRepository
 import com.daniel.chickenfood.domain.model.BannerModel
 import com.daniel.chickenfood.domain.model.CategoryModel
 import com.google.firebase.database.DataSnapshot

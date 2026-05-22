@@ -77,7 +77,8 @@ fun MainScreen(
             item {
                 Banner(
                     banners = banners,
-                    isLoading = isLoadingBanners
+                    isLoading = isLoadingBanners,
+                    height = 240
                 )
             }
             item {
