@@ -40,12 +40,11 @@ fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
 ) {
     val banners by viewModel.banners.collectAsState()
-    var selectedItem by rememberSaveable {
-        mutableStateOf("Home")
-    }
-
+    val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val isLoadingCategories by viewModel.isLoadingCategories.collectAsState()
+
+    var selectedItem by rememberSaveable { mutableStateOf("Home") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +77,7 @@ fun MainScreen(
             item {
                 Banner(
                     banners = banners,
-                    isLoading = banners.isEmpty()
+                    isLoading = isLoadingBanners
                 )
             }
             item {

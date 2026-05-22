@@ -1,7 +1,16 @@
 package com.daniel.chickenfood.domain.model
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CategoryModel(
-    val Id: Int = 0,
-    val ImagePath: String = "",
-    val Name: String = ""
+    @SerializedName("id")
+    val id: Int = 0,
+    
+    @SerializedName("imagePath")
+    val imagePath: String = "",
+    
+    @SerializedName("name")
+    val name: String = ""
 )

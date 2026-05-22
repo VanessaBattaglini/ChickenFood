@@ -3,9 +3,6 @@ package com.daniel.chickenfood.presentation.activity.dashboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -53,25 +50,29 @@ fun CategorySection(
                 )
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+            val rows = categories.chunked(3)
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(260.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(categories) { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = {
-                            onCategoryClick(category)
+                rows.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        rowItems.forEach { category ->
+                            CategoryItem(
+                                category = category,
+                                onClick = { onCategoryClick(category) },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
-                    )
+                        repeat(3 - rowItems.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
                 }
             }
         }
@@ -81,10 +82,11 @@ fun CategorySection(
 @Composable
 fun CategoryItem(
     category: CategoryModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(colorResource(R.color.lightOrange))
             .clickable { onClick() }
@@ -92,15 +94,14 @@ fun CategoryItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = category.ImagePath,
-            contentDescription = category.Name,
+            model = category.imagePath,
+            contentDescription = category.name,
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(70.dp)
+            modifier = Modifier.size(70.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = category.Name,
+            text = category.name,
             style = MaterialTheme.typography.bodyMedium,
             color = colorResource(R.color.darkPurple),
             fontWeight = FontWeight.Bold

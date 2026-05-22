@@ -41,9 +41,6 @@ class MainViewModel(
         loadCategories()
     }
 
-    // ---------------------------------
-    // LOAD BANNERS
-    // ---------------------------------
     private fun loadBanners() {
         viewModelScope.launch {
             _isLoadingBanners.value = true
