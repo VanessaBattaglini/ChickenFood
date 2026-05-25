@@ -3,6 +3,7 @@ package com.daniel.chickenfood.presentation.activity.detailEachFood
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import com.daniel.chickenfood.domain.model.FoodModel
+import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 
 class DetailEachFoodActivity : BaseActivity() {

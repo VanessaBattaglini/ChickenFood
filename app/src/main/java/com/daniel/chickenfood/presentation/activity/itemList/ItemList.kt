@@ -96,20 +96,6 @@ private fun FoodImage(
 }
 
 @Composable
-private fun FoodImage(
-    food: FoodModel
-) {
-
-    AsyncImage(
-        model = food.imagePath,
-        contentDescription = food.title,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(130.dp)
-            .clip(RoundedCornerShape(16.dp))
-    )
-}
-@Composable
 private fun RowScope.FoodDetail(
     food: FoodModel
 ) {

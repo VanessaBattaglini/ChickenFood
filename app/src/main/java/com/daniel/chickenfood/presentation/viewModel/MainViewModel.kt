@@ -1,5 +1,6 @@
 package com.daniel.chickenfood.presentation.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daniel.chickenfood.domain.model.BannerModel
@@ -8,16 +9,17 @@ import com.daniel.chickenfood.domain.model.FoodModel
 import com.daniel.chickenfood.domain.reposity.MainRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+
+private const val TAG = "MainViewModel"
 
 class MainViewModel(
     private val repository: MainRepository
 ) : ViewModel() {
-
     // ---------------------------------
     // BANNERS
     // ---------------------------------
-
     private val _banners =
         MutableStateFlow<List<BannerModel>>(emptyList())
     val banners = _banners.asStateFlow()
@@ -72,9 +74,19 @@ class MainViewModel(
 
     private fun loadBanners() {
         viewModelScope.launch {
-            _isLoadingBanners.value = true
-            repository.loadBanner().collect { list ->
+            try {
+                _isLoadingBanners.value = true
+                Log.d(TAG, "Loading banners...")
+                val list = repository.loadBanner().first()
+                Log.d(TAG, "Banners loaded: ${list.size} items")
+                list.forEachIndexed { index, banner ->
+                    Log.d(TAG, "Banner $index: image='${banner.image}'")
+                }
                 _banners.value = list
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading banners", e)
+                e.printStackTrace()
+            } finally {
                 _isLoadingBanners.value = false
             }
         }
@@ -86,9 +98,19 @@ class MainViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            _isLoadingCategories.value = true
-            repository.loadCategory().collect { list ->
+            try {
+                _isLoadingCategories.value = true
+                Log.d(TAG, "Loading categories...")
+                val list = repository.loadCategory().first()
+                Log.d(TAG, "Categories loaded: ${list.size} items")
+                list.forEachIndexed { index, category ->
+                    Log.d(TAG, "Category $index: id=${category.id}, name='${category.name}', imagePath='${category.imagePath}'")
+                }
                 _categories.value = list
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading categories", e)
+                e.printStackTrace()
+            } finally {
                 _isLoadingCategories.value = false
             }
         }
@@ -103,12 +125,21 @@ class MainViewModel(
     ) {
         _selectedCategoryId.value = categoryId
         viewModelScope.launch {
-            _isLoadingFoods.value = true
-            repository.loadFiltered(categoryId)
-                .collect { list ->
-                    _foods.value = list
-                    _isLoadingFoods.value = false
+            try {
+                _isLoadingFoods.value = true
+                Log.d(TAG, "Loading foods for category: $categoryId")
+                val list = repository.loadFiltered(categoryId).first()
+                Log.d(TAG, "Foods loaded: ${list.size} items for category $categoryId")
+                list.forEachIndexed { index, food ->
+                    Log.d(TAG, "Food $index: id='${food.id}', title='${food.title}', categoryId='${food.categoryId}'")
                 }
+                _foods.value = list
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading foods for category $categoryId", e)
+                e.printStackTrace()
+            } finally {
+                _isLoadingFoods.value = false
+            }
         }
     }
 }

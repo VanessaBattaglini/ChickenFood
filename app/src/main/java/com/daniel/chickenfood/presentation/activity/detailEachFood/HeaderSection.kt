@@ -90,15 +90,15 @@ fun HeaderSection(
                 )
             )
             RowDetail(
-                item = item,
-                modifier = Modifier.padding(
-                    top = 12.dp
-                )
+                time = item.timeValue,
+                rating = item.star,
+                calories = 250,
+                modifier = Modifier
             )
 
             NumberRow(
-                item = item,
-                numberInCart = quantity,
+                price = item.price.toDouble(),
+                quantity = quantity,
                 onIncrement = onIncrement,
                 onDecrement = onDecrement,
                 modifier = Modifier.padding(

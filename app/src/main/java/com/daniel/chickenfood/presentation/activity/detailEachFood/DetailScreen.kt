@@ -51,10 +51,10 @@ fun DetailScreen(
                 item = item,
                 quantity = quantity,
                 onBackClick = onBackClick,
-                onIncrease = {
+                onIncrement = {
                     quantity++
                 },
-                onDecrease = {
+                onDecrement = {
                     if (quantity > 1) {
                         quantity--
                     }
@@ -67,7 +67,7 @@ fun DetailScreen(
         }
 
         FooterSection(
-            totalPrice = item.price * quantity,
+            totalPrice = (item.price * quantity).toDouble(),
             onAddToCartClick = onAddToCartClick,
             modifier = Modifier.align(
                 Alignment.BottomCenter

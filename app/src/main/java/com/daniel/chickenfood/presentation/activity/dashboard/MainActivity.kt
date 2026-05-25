@@ -1,6 +1,8 @@
 package com.daniel.chickenfood.presentation.activity.dashboard
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
@@ -21,8 +23,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.presentation.activity.BaseActivity
+import com.daniel.chickenfood.presentation.activity.itemList.ItemsListActivity
 import com.daniel.chickenfood.presentation.viewModel.MainViewModel
 import org.koin.androidx.compose.koinViewModel
+
+private const val TAG = "MainActivity"
 
 class MainActivity : BaseActivity() {
 
@@ -30,14 +35,29 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen()
+            MainScreen(
+                onCategoryClick = { categoryId, categoryName ->
+                    navigateToItemsList(categoryId, categoryName)
+                }
+            )
         }
+    }
+
+    private fun navigateToItemsList(categoryId: Int, categoryName: String) {
+        Log.d(TAG, "navigateToItemsList called with categoryId=$categoryId, categoryName=$categoryName")
+        val intent = Intent(this, ItemsListActivity::class.java).apply {
+            putExtra("id", categoryId.toString())
+            putExtra("title", categoryName)
+        }
+        Log.d(TAG, "Starting ItemsListActivity with id=${categoryId.toString()}")
+        startActivity(intent)
     }
 }
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = koinViewModel()
+    viewModel: MainViewModel = koinViewModel(),
+    onCategoryClick: (Int, String) -> Unit = { _, _ -> }
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
@@ -85,7 +105,9 @@ fun MainScreen(
                 CategorySection(
                     categories = categories,
                     isLoading = isLoadingCategories,
-                    onCategoryClick = {
+                    onCategoryClick = { category ->
+                        Log.d(TAG, "Category clicked: id=${category.id}, name=${category.name}")
+                        onCategoryClick(category.id, category.name)
                     }
                 )
             }
