@@ -2,6 +2,7 @@ package com.daniel.chickenfood.domain.model
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
+import java.io.Serializable as JavaSerializable
 
 @Serializable
 data class FoodModel (
@@ -19,4 +20,4 @@ data class FoodModel (
     @SerializedName("timeValue")val timeValue: Int = 0,
     @SerializedName("title")val title: String = "",
     var numberInCart: Int = 0
-)
+) : JavaSerializable
