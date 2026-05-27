@@ -2,6 +2,7 @@ package com.daniel.chickenfood.presentation.activity.detailEachFood
 
 import android.R.attr.bottom
 import android.R.attr.top
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ fun HeaderSection(
     item: FoodModel,
     quantity: Int,
     onBackClick: () -> Unit,
+    onHomeClick: () -> Unit = {},
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
     modifier: Modifier = Modifier
@@ -73,7 +75,12 @@ fun HeaderSection(
             BackButton(
                 onClick = onBackClick
             )
-            FavoriteButton()
+            Row {
+                HomeButton(
+                    onClick = onHomeClick
+                )
+                FavoriteButton()
+            }
         }
         Column(
             modifier = Modifier
@@ -113,17 +120,44 @@ fun BackButton(
     onClick: () -> Unit
 ) {
     IconButton(
-        onClick = onClick
+        onClick = onClick,
+        modifier = Modifier
+            .padding(8.dp)
     ) {
         Icon(
             painter = painterResource(
-                R.drawable.back
+                R.drawable.back_grey
             ),
             contentDescription = "Volver",
-            tint = Color.White
+            tint = Color.White,
+            modifier = Modifier.padding(4.dp)
         )
     }
 }
+
+@Composable
+fun HomeButton(
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = {
+            Log.d("HeaderSection", "Home button clicked")
+            onClick()
+        },
+        modifier = Modifier
+            .padding(8.dp)
+    ) {
+        Icon(
+            painter = painterResource(
+                R.drawable.btn_1
+            ),
+            contentDescription = "Home",
+            tint = Color.White,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
+
 @Composable
 fun FavoriteButton(
     onClick: () -> Unit = {}

@@ -1,5 +1,7 @@
 package com.daniel.chickenfood.presentation.activity.dashboard
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -15,8 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.BannerModel
@@ -82,14 +86,38 @@ fun BannerCarousel(
                     .clip(RoundedCornerShape(20.dp))
                     .background(colorResource(R.color.grey))
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(banners[page].image)
-                        .crossfade(true)
-                        .build(),
+                val imageRequest = ImageRequest.Builder(LocalContext.current)
+                    .data(banners[page].image)
+                    .crossfade(true)
+                    .listener(
+                        onStart = { request ->
+                            Log.d("Coil_Debug", "Comenzando a cargar: ${request.data}")
+                        },
+                        onSuccess = { request, result ->
+                            Log.d("Coil_Debug", "¡Imagen cargada con éxito!")
+                        },
+                        onError = { request, result ->
+                            // AQUÍ CAPTURAS EL ERROR
+                            val errorException = result.throwable
+                            Log.e("Coil_Debug", "Error al cargar la imagen: ${errorException.localizedMessage}")
+                            errorException.printStackTrace() // Imprime todo el rastro del error en consola
+                        }
+                    )
+                    .build()
+
+                SubcomposeAsyncImage(
+                    model = imageRequest,
                     contentDescription = "Banner ${page + 1}",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    error = {
+                        Box {
+                            Image(
+                                painter = painterResource(R.drawable.pollo),
+                                contentDescription = ""
+                            )
+                        }
+                    }
                 )
             }
         }

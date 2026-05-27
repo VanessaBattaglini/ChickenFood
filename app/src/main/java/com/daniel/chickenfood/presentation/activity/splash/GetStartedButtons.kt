@@ -65,7 +65,6 @@ fun GetStartedButtons(
                 containerColor = colorResource(R.color.orange)
             )
         ) {
-
             Text(
                 text = "Empecemos",
                 fontSize = 16.sp,

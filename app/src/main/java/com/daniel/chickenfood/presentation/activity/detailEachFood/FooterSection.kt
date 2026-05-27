@@ -1,5 +1,6 @@
 package com.daniel.chickenfood.presentation.activity.detailEachFood
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.R
+
+private const val TAG = "FooterSection"
 
 @Composable
 fun FooterSection(
@@ -57,7 +60,10 @@ fun FooterSection(
                 )
             }
             Button(
-                onClick = onAddToCartClick,
+                onClick = {
+                    Log.d(TAG, "Agregar al carrito button clicked")
+                    onAddToCartClick()
+                },
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor =

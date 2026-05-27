@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -22,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.R
+import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
+import com.daniel.chickenfood.presentation.activity.cart.CartActivity
 import com.daniel.chickenfood.presentation.activity.itemList.ItemsListActivity
 import com.daniel.chickenfood.presentation.viewModel.MainViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -38,6 +41,9 @@ class MainActivity : BaseActivity() {
             MainScreen(
                 onCategoryClick = { categoryId, categoryName ->
                     navigateToItemsList(categoryId, categoryName)
+                },
+                onCartClick = {
+                    navigateToCart()
                 }
             )
         }
@@ -49,7 +55,13 @@ class MainActivity : BaseActivity() {
             putExtra("id", categoryId.toString())
             putExtra("title", categoryName)
         }
-        Log.d(TAG, "Starting ItemsListActivity with id=${categoryId.toString()}")
+        Log.d(TAG, "Starting ItemsListActivity with id=${categoryId}")
+        startActivity(intent)
+    }
+
+    private fun navigateToCart() {
+        Log.d(TAG, "navigateToCart called")
+        val intent = Intent(this, CartActivity::class.java)
         startActivity(intent)
     }
 }
@@ -57,7 +69,8 @@ class MainActivity : BaseActivity() {
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
-    onCategoryClick: (Int, String) -> Unit = { _, _ -> }
+    onCategoryClick: (Int, String) -> Unit = { _, _ -> },
+    onCartClick: () -> Unit = {}
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
@@ -65,6 +78,11 @@ fun MainScreen(
     val isLoadingCategories by viewModel.isLoadingCategories.collectAsState()
 
     var selectedItem by rememberSaveable { mutableStateOf("Home") }
+    var cartItemCount by rememberSaveable { mutableIntStateOf(0) }
+    
+    // Cargar contador de carrito
+    val managmentCart = ManagmentCart(androidx.compose.ui.platform.LocalContext.current)
+    cartItemCount = managmentCart.getListCart().size
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -72,9 +90,13 @@ fun MainScreen(
         bottomBar = {
             BottomBar(
                 selectedItem = selectedItem,
-                onItemSelected = {
-                    selectedItem = it
-                }
+                onItemSelected = { item ->
+                    selectedItem = item
+                    if (item == "Cart") {
+                        onCartClick()
+                    }
+                },
+                cartItemCount = cartItemCount
             )
         }
     ) { paddingValues ->

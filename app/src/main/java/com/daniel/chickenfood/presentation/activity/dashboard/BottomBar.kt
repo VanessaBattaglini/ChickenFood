@@ -1,6 +1,10 @@
 package com.daniel.chickenfood.presentation.activity.dashboard
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -19,7 +23,8 @@ import com.daniel.chickenfood.R
 @Composable
 fun BottomBar(
     selectedItem: String,
-    onItemSelected: (String) -> Unit
+    onItemSelected: (String) -> Unit,
+    cartItemCount: Int = 0
 ) {
     val bottomMenuItems = bottomMenuItems()
 
@@ -34,16 +39,34 @@ fun BottomBar(
                     onItemSelected(item.label)
                 },
                 icon = {
-                    Icon(
-                        painter = painterResource(item.icon),
-                        contentDescription = item.label,
-                        modifier = Modifier.size(24.dp),
-                        tint =
-                            if (selectedItem == item.label)
-                                colorResource(R.color.orange)
-                            else
-                                Color.Gray
-                    )
+                    Box {
+                        Icon(
+                            painter = painterResource(item.icon),
+                            contentDescription = item.label,
+                            modifier = Modifier.size(24.dp),
+                            tint =
+                                if (selectedItem == item.label)
+                                    colorResource(R.color.orange)
+                                else
+                                    Color.Gray
+                        )
+                        // Mostrar badge con contador en el carrito
+                        if (item.label == "Cart" && cartItemCount > 0) {
+                            Badge(
+                                modifier = Modifier
+                                    .background(
+                                        color = colorResource(R.color.orange),
+                                        shape = CircleShape
+                                    )
+                            ) {
+                                Text(
+                                    text = cartItemCount.toString(),
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
                 },
                 label = {
                     Text(
