@@ -6,7 +6,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.daniel.chickenfood.domain.model.FoodModel
 import com.daniel.chickenfood.helper.ManagmentCart
@@ -25,7 +31,6 @@ class DetailEachFoodActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         item = intent.getSerializableExtra("object") as FoodModel
         managmentCart = ManagmentCart(applicationContext)
@@ -37,34 +42,49 @@ class DetailEachFoodActivity : BaseActivity() {
 
         setContent {
             MaterialTheme {
-                DetailScreen(
-                    item = item,
-                    onBackClick = { finish() },
-                    onHomeClick = { navigateToHome() },
-                    onAddToCartClick = { quantity ->
-                        Log.d(TAG, "onAddToCartClick triggered for: ${item.title}, quantity: $quantity")
-                        try {
-                            // Actualizar la cantidad del item con la cantidad seleccionada
-                            item.numberInCart = quantity
-                            Log.d(TAG, "Updated item quantity to: ${item.numberInCart}")
-                            
-                            managmentCart.insertItem(item)
-                            Log.d(TAG, "insertItem completed successfully")
-                            
-                            // Usar corrutina en lugar de Thread.sleep para no bloquear UI
-                            lifecycleScope.launch {
-                                delay(500)  // Esperar a que se muestre el Toast
-                                navigateToCart()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                ) {
+                    DetailScreen(
+                        modifier = Modifier.padding(top = 24.dp),
+                        item = item,
+                        onBackClick = { finish() },
+                        onHomeClick = { navigateToHome() },
+                        onAddToCartClick = { quantity ->
+                            Log.d(
+                                TAG,
+                                "onAddToCartClick triggered for: ${item.title}, quantity: $quantity"
+                            )
+                            try {
+                                // Actualizar la cantidad del item con la cantidad seleccionada
+                                item.numberInCart = quantity
+                                Log.d(TAG, "Updated item quantity to: ${item.numberInCart}")
+
+                                managmentCart.insertItem(item)
+                                Log.d(TAG, "insertItem completed successfully")
+
+                                // Usar corrutina en lugar de Thread.sleep para no bloquear UI
+                                lifecycleScope.launch {
+                                    delay(500)  // Esperar a que se muestre el Toast
+                                    navigateToCart()
+                                }
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error in onAddToCartClick: ${e.message}", e)
+                                Toast.makeText(
+                                    this@DetailEachFoodActivity,
+                                    "Error: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error in onAddToCartClick: ${e.message}", e)
-                            Toast.makeText(this@DetailEachFoodActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                         }
-                    }
-                )
+                    )
+                }
+            }
             }
         }
-    }
+
 
     private fun navigateToCart() {
         Log.d(TAG, "Navigating to CartActivity")

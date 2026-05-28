@@ -72,7 +72,9 @@ fun BannerCarousel(
     }
     
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
     ) {
         HorizontalPager(
             state = pagerState,
@@ -80,8 +82,8 @@ fun BannerCarousel(
         ) { page ->
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.92f)
+                    .align(Alignment.CenterHorizontally)
                     .height(height.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(colorResource(R.color.grey))
@@ -113,7 +115,7 @@ fun BannerCarousel(
                     error = {
                         Box {
                             Image(
-                                painter = painterResource(R.drawable.pollo),
+                                painter = painterResource(R.drawable.error),
                                 contentDescription = ""
                             )
                         }
@@ -126,7 +128,9 @@ fun BannerCarousel(
         
         // Indicadores
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(banners.size) { index ->

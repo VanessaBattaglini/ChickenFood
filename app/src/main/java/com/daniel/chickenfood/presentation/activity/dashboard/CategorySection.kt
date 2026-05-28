@@ -56,7 +56,7 @@ fun CategorySection(
             fontWeight = FontWeight.Bold,
             color = colorResource(R.color.white),
             modifier = Modifier.padding(
-                horizontal = 20.dp,
+                horizontal = 16.dp,
                 vertical = 12.dp
             )
         )
@@ -77,7 +77,7 @@ fun CategorySection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 rows.forEach { rowItems ->
                     Row(

@@ -3,6 +3,7 @@ package com.daniel.chickenfood.presentation.activity.dashboard
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -36,7 +39,11 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(
+                scrim = android.graphics.Color.TRANSPARENT, // Fondo de la barra transparente
+            )
+        )
         setContent {
             MainScreen(
                 onCategoryClick = { categoryId, categoryName ->
@@ -85,8 +92,15 @@ fun MainScreen(
     cartItemCount = managmentCart.getListCart().size
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         containerColor = colorResource(R.color.darkBrown),
+        topBar = {
+            TopBar(
+                modifier = Modifier
+                    .padding(top = 35.dp),
+            )
+        },
         bottomBar = {
             BottomBar(
                 selectedItem = selectedItem,
@@ -104,6 +118,7 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .safeDrawingPadding()
                 .background(colorResource(R.color.darkBrown)),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             contentPadding = PaddingValues(
@@ -111,16 +126,13 @@ fun MainScreen(
             )
         ) {
             item {
-                TopBar()
-            }
-            item {
                 SearchBar()
             }
             item {
                 Banner(
                     banners = banners,
                     isLoading = isLoadingBanners,
-                    height = 240
+                    height = 200
                 )
             }
             item {

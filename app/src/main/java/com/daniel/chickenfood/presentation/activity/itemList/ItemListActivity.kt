@@ -3,7 +3,9 @@ package com.daniel.chickenfood.presentation.activity.itemList
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +47,7 @@ class ItemsListActivity : BaseActivity() {
         val title =
             intent.getStringExtra("title").orEmpty()
         Log.d(TAG, "ItemsListActivity created with categoryId=$categoryId, title=$title")
+
         setContent {
             ItemsListScreen(
                 title = title,
@@ -87,7 +91,9 @@ fun ItemsListScreen(
         )
     }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
     ) {
         HeaderSection(
             title = title,

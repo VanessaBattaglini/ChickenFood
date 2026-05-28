@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -13,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.domain.model.FoodModel
 
 private const val TAG = "DetailScreen"
@@ -33,6 +36,7 @@ fun DetailScreen(
 
     Column(
         modifier = modifier
+            .padding(top = 40.dp)
             .fillMaxSize()
             .background(Color.White)
     ) {
@@ -45,7 +49,6 @@ fun DetailScreen(
                     rememberScrollState()
                 )
         ) {
-
             HeaderSection(
                 item = item,
                 quantity = quantity,
@@ -77,4 +80,25 @@ fun DetailScreen(
             }
         )
     }
+}
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+fun DetailScreenPreview() {
+    val comidaDePrueba = FoodModel(
+        title = "Delicioso Pollo Frito",
+        description = "Crujiente por fuera, jugoso por dentro. Acompañado de papas fritas y salsa de la casa hecha con ingredientes seleccionados.",
+        price = 12000,
+    )
+    DetailScreen(
+        item = comidaDePrueba,
+        onBackClick = {},
+        onHomeClick = {},
+        onAddToCartClick = { cantidad ->
+            Log.d("Preview_Debug", "Click en agregar al carrito: $cantidad")
+        },
+        modifier = Modifier
+    )
 }

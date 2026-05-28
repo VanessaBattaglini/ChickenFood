@@ -28,13 +28,14 @@ import com.daniel.chickenfood.R
 
 @Composable
 fun TopBar(
+    modifier: Modifier = Modifier,
     onMenuClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
