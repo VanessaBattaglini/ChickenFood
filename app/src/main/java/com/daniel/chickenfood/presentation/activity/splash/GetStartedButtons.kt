@@ -34,7 +34,25 @@ fun GetStartedButtons(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // Botón secundario
+        // Botón principal - Empecemos (izquierda)
+        Button(
+            onClick = onGetStartedClick,
+            modifier = Modifier
+                .weight(1f)
+                .height(36.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.orange)
+            )
+        ) {
+            Text(
+                text = "Empecemos",
+                fontSize = 16.sp,
+                color = Color.White
+            )
+        }
+
+        // Botón secundario - Inscríbete (derecha)
         OutlinedButton(
             onClick = onSignUpClick,
             modifier = Modifier
@@ -50,24 +68,6 @@ fun GetStartedButtons(
             Text(
                 text = "Inscríbete",
                 fontSize = 18.sp,
-                color = Color.White
-            )
-        }
-
-        // Botón principal
-        Button(
-            onClick = onGetStartedClick,
-            modifier = Modifier
-                .weight(1f)
-                .height(36.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.orange)
-            )
-        ) {
-            Text(
-                text = "Empecemos",
-                fontSize = 16.sp,
                 color = Color.White
             )
         }

@@ -30,7 +30,8 @@ import com.daniel.chickenfood.R
 fun TopBar(
     modifier: Modifier = Modifier,
     onMenuClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -87,15 +88,27 @@ fun TopBar(
                 )
             }
         }
-        IconButton(
-            onClick = onNotificationClick
-        ) {
+        Row {
+            IconButton(
+                onClick = onNotificationClick
+            ) {
 
-            Icon(
-                painter = painterResource(R.drawable.bell_icon),
-                contentDescription = "Notifications",
-                tint = Color.Unspecified
-            )
+                Icon(
+                    painter = painterResource(R.drawable.bell_icon),
+                    contentDescription = "Notifications",
+                    tint = Color.Unspecified
+                )
+            }
+            IconButton(
+                onClick = onLogoutClick
+            ) {
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_logout),
+                    contentDescription = "Logout",
+                    tint = Color.White
+                )
+            }
         }
     }
 }

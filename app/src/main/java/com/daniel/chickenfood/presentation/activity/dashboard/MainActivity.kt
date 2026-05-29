@@ -26,10 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.daniel.chickenfood.R
+import com.daniel.chickenfood.helper.AuthHelper
 import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.cart.CartActivity
 import com.daniel.chickenfood.presentation.activity.itemList.ItemsListActivity
+import com.daniel.chickenfood.presentation.activity.splash.SplashActivity
 import com.daniel.chickenfood.presentation.viewModel.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,6 +53,9 @@ class MainActivity : BaseActivity() {
                 },
                 onCartClick = {
                     navigateToCart()
+                },
+                onLogoutClick = {
+                    logout()
                 }
             )
         }
@@ -71,13 +76,22 @@ class MainActivity : BaseActivity() {
         val intent = Intent(this, CartActivity::class.java)
         startActivity(intent)
     }
+
+    private fun logout() {
+        Log.d(TAG, "Logout clicked")
+        AuthHelper.signOut()
+        val intent = Intent(this, SplashActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
     onCategoryClick: (Int, String) -> Unit = { _, _ -> },
-    onCartClick: () -> Unit = {}
+    onCartClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
@@ -99,6 +113,7 @@ fun MainScreen(
             TopBar(
                 modifier = Modifier
                     .padding(top = 35.dp),
+                onLogoutClick = onLogoutClick
             )
         },
         bottomBar = {

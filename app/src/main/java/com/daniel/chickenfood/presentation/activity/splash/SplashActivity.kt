@@ -2,6 +2,9 @@ package com.daniel.chickenfood.presentation.activity.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,31 +42,48 @@ import androidx.compose.ui.unit.sp
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.presentation.activity.BaseActivity
+import com.daniel.chickenfood.presentation.activity.auth.SignUpActivity
+import com.daniel.chickenfood.helper.AuthHelper
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(
-                scrim = android.graphics.Color.TRANSPARENT, // Fondo de la barra transparente
+                scrim = android.graphics.Color.TRANSPARENT,
             )
         )
         setContent {
             SplashScreen(
                 onGetStartedClick = {
-                    startActivity(
-                        Intent(this, MainActivity::class.java)
-                    )
-                    finish()
+                    navigateToDashboard()
+                },
+                onSignUpClick = {
+                    navigateToSignUp()
                 }
             )
         }
+    }
+
+    private fun navigateToDashboard() {
+        Log.d("SplashActivity", "Navegando al Dashboard")
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToSignUp() {
+        Log.d("SplashActivity", "Navegando a SignUpActivity")
+        val intent = Intent(this, SignUpActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 
 @Composable
 fun SplashScreen(
-    onGetStartedClick: () -> Unit
+    onGetStartedClick: () -> Unit,
+    onSignUpClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -129,7 +149,7 @@ fun SplashScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 GetStartedButtons(
-                    onSignUpClick = {},
+                    onSignUpClick = onSignUpClick,
                     onGetStartedClick = onGetStartedClick,
                     modifier = Modifier.padding(top = 30.dp)
                 )

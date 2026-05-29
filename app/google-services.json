@@ -13,7 +13,12 @@
           "package_name": "com.daniel.chickenfood"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "435903794761-mpivar6jf5bgds85sjf3ij19gep23ue0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyACZUj4PZMqmcJQ19OvB3SpFo55iXXEgSo"
@@ -21,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435903794761-mpivar6jf5bgds85sjf3ij19gep23ue0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChickenFood">
         <activity
+            android:name=".presentation.activity.auth.SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.activity.itemList.ItemsListActivity"
             android:exported="false" />
         <activity
