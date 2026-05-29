@@ -1,0 +1,323 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║         FLUJO COMPLETO: DESDE SPLASH HASTA BOTÓN "AGREGAR AL CARRITO"        ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 1: SPLASH SCREEN                                                     │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  SplashActivity.onCreate()                                         │  │
+│  │    ├─ setContent { SplashScreen(...) }                            │  │
+│  │    │   ├─ Imagen de introducción                                  │  │
+│  │    │   ├─ Logo del pollo                                          │  │
+│  │    │   ├─ Texto motivacional                                      │  │
+│  │    │   └─ Botón "Get Started"                                     │  │
+│  │    │                                                               │  │
+│  │    └─ onGetStartedClick()                                         │  │
+│  │       ├─ startActivity(MainActivity)                              │  │
+│  │       └─ finish()                                                 │  │
+│  │                                                                     │  │
+│  │  ⚠️  PROBLEMA: NO tiene enableEdgeToEdge()                        │  │
+│  │  ⚠️  PROBLEMA: NO tiene MaterialTheme wrapper                     │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│                              ↓ (Usuario hace click)                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 2: DASHBOARD (MAIN ACTIVITY)                                         │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  MainActivity.onCreate()                                           │  │
+│  │    ├─ enableEdgeToEdge()  ✅ CORRECTO                             │  │
+│  │    ├─ setContent { MainScreen(...) }                             │  │
+│  │    │   ├─ TopBar (búsqueda)                                       │  │
+│  │    │   ├─ SearchBar                                               │  │
+│  │    │   ├─ Banner (carrusel)                                       │  │
+│  │    │   ├─ CategorySection                                         │  │
+│  │    │   │   ├─ Pollo                                               │  │
+│  │    │   │   ├─ Bebidas                                             │  │
+│  │    │   │   ├─ Postres                                             │  │
+│  │    │   │   └─ Otros                                               │  │
+│  │    │   └─ BottomBar (Home, Search, Cart, Profile)                │  │
+│  │    │                                                               │  │
+│  │    └─ onCategoryClick(categoryId, categoryName)                   │  │
+│  │       └─ navigateToItemsList(categoryId, categoryName)            │  │
+│  │          └─ startActivity(ItemsListActivity)                      │  │
+│  │                                                                     │  │
+│  │  ✅ CORRECTO: Tiene enableEdgeToEdge()                            │  │
+│  │  ✅ CORRECTO: Tiene MaterialTheme wrapper                         │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│                    ↓ (Usuario selecciona categoría)                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 3: LISTA DE PRODUCTOS (ITEMS LIST ACTIVITY)                          │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  ItemsListActivity.onCreate()                                      │  │
+│  │    ├─ categoryId = intent.getStringExtra("id")                    │  │
+│  │    ├─ title = intent.getStringExtra("title")                      │  │
+│  │    ├─ setContent { ItemsListScreen(...) }                         │  │
+│  │    │   ├─ HeaderSection (título)                                  │  │
+│  │    │   ├─ LaunchedEffect(categoryId)                              │  │
+│  │    │   │   └─ viewModel.loadFoodsByCategory(categoryId)           │  │
+│  │    │   │       └─ Carga desde Firebase                            │  │
+│  │    │   └─ ItemsList                                               │  │
+│  │    │       ├─ FoodCard 1 (Combo Pollo Asado)                      │  │
+│  │    │       ├─ FoodCard 2 (Pollo a la Brasa)                       │  │
+│  │    │       ├─ FoodCard 3 (Alitas BBQ)                             │  │
+│  │    │       └─ ...                                                 │  │
+│  │    │                                                               │  │
+│  │    └─ onFoodClick(food)                                           │  │
+│  │       └─ navigateToDetail(food)                                   │  │
+│  │          └─ startActivity(DetailEachFoodActivity)                 │  │
+│  │                                                                     │  │
+│  │  ⚠️  PROBLEMA: NO tiene enableEdgeToEdge()                        │  │
+│  │  ⚠️  PROBLEMA: NO tiene MaterialTheme wrapper                     │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│                      ↓ (Usuario selecciona producto)                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 4: DETALLE DEL PRODUCTO (DETAIL EACH FOOD ACTIVITY)                  │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  DetailEachFoodActivity.onCreate()                                 │  │
+│  │    ├─ enableEdgeToEdge()  ✅ CORRECTO (FIJO)                      │  │
+│  │    ├─ item = intent.getSerializableExtra("object")                │  │
+│  │    ├─ item.numberInCart = 0  ← IMPORTANTE                         │  │
+│  │    ├─ setContent {                                                │  │
+│  │    │   MaterialTheme {  ✅ CORRECTO (FIJO)                        │  │
+│  │    │       DetailScreen(                                          │  │
+│  │    │           item = item,                                       │  │
+│  │    │           onBackClick = { finish() },                        │  │
+│  │    │           onHomeClick = { navigateToHome() },                │  │
+│  │    │           onAddToCartClick = { quantity -> ... }             │  │
+│  │    │       )                                                       │  │
+│  │    │   }                                                           │  │
+│  │    │ }                                                             │  │
+│  │    │                                                               │  │
+│  │    └─ DetailScreen renderiza:                                     │  │
+│  │       ├─ HeaderSection                                            │  │
+│  │       │   ├─ AsyncImage (imagen del producto)                     │  │
+│  │       │   ├─ BackButton                                           │  │
+│  │       │   ├─ HomeButton                                           │  │
+│  │       │   ├─ FavoriteButton                                       │  │
+│  │       │   ├─ Nombre: "Combo Pollo Asado"                          │  │
+│  │       │   ├─ RowDetail (tiempo, rating, calorías)                 │  │
+│  │       │   └─ NumberRow                                            │  │
+│  │       │       ├─ Precio: $25000                                   │  │
+│  │       │       └─ QuantitySelector                                 │  │
+│  │       │           ├─ Botón "-"                                    │  │
+│  │       │           ├─ Cantidad: 1                                  │  │
+│  │       │           └─ Botón "+"                                    │  │
+│  │       ├─ DescriptionSection                                       │  │
+│  │       │   └─ Descripción del producto                             │  │
+│  │       └─ FooterSection                                            │  │
+│  │           ├─ Total: $25000                                        │  │
+│  │           └─ Botón "Agregar al carrito"                           │  │
+│  │                                                                     │  │
+│  │  ✅ CORRECTO: Tiene enableEdgeToEdge()                            │  │
+│  │  ✅ CORRECTO: Tiene MaterialTheme wrapper                         │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│              ↓ (Usuario selecciona cantidad y hace click)                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 5: BOTÓN "AGREGAR AL CARRITO" - FLUJO DE CALLBACKS                   │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  1. Usuario hace click en botón "Agregar al carrito"               │  │
+│  │     ↓                                                               │  │
+│  │  2. FooterSection.Button.onClick()                                 │  │
+│  │     ├─ Log: "Agregar al carrito button clicked"                   │  │
+│  │     └─ onAddToCartClick()  ← Callback 1                           │  │
+│  │        ↓                                                            │  │
+│  │  3. DetailScreen.onAddToCartClick(quantity)                        │  │
+│  │     ├─ Log: "FooterSection.onAddToCartClick called..."            │  │
+│  │     └─ onAddToCartClick(quantity)  ← Callback 2                   │  │
+│  │        ↓                                                            │  │
+│  │  4. DetailEachFoodActivity.onAddToCartClick(quantity)              │  │
+│  │     ├─ Log: "onAddToCartClick triggered for: ..., quantity: 2"    │  │
+│  │     ├─ item.numberInCart = quantity                               │  │
+│  │     ├─ Log: "Updated item quantity to: 2"                         │  │
+│  │     ├─ managmentCart.insertItem(item)                             │  │
+│  │     │   └─ Guarda en SQLite                                       │  │
+│  │     ├─ Log: "insertItem completed successfully"                   │  │
+│  │     ├─ lifecycleScope.launch {                                    │  │
+│  │     │   ├─ delay(500)  ← Espera 500ms                             │  │
+│  │     │   └─ navigateToCart()                                       │  │
+│  │     │       ├─ Intent(CartActivity)                               │  │
+│  │     │       └─ startActivity(intent)                              │  │
+│  │     │           ↓                                                  │  │
+│  │     └─ CartActivity se abre                                       │  │
+│  │                                                                     │  │
+│  │  LOGS ESPERADOS:                                                   │  │
+│  │  ✓ D/FooterSection: Agregar al carrito button clicked             │  │
+│  │  ✓ D/DetailScreen: FooterSection.onAddToCartClick...              │  │
+│  │  ✓ D/DetailEachFoodActivity: onAddToCartClick triggered...        │  │
+│  │  ✓ D/DetailEachFoodActivity: Updated item quantity to...          │  │
+│  │  ✓ D/DetailEachFoodActivity: insertItem completed...              │  │
+│  │  ✓ D/DetailEachFoodActivity: Navigating to CartActivity           │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│                    ↓ (Se abre CartActivity)                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PASO 6: CARRITO (CART ACTIVITY)                                           │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                                                                     │  │
+│  │  CartActivity.onCreate()                                           │  │
+│  │    ├─ enableEdgeToEdge()  ✅ CORRECTO (FIJO)                      │  │
+│  │    ├─ managmentCart = ManagmentCart(applicationContext)            │  │
+│  │    ├─ cartItems = managmentCart.getListCart()                      │  │
+│  │    ├─ setContent { CartScreen(...) }                              │  │
+│  │    │   ├─ Header                                                   │  │
+│  │    │   │   ├─ BackButton → onHomeClick()                          │  │
+│  │    │   │   └─ Título "Mi Carrito"                                 │  │
+│  │    │   ├─ LazyColumn (lista de productos)                         │  │
+│  │    │   │   ├─ CartItemCard 1                                      │  │
+│  │    │   │   │   ├─ Imagen                                          │  │
+│  │    │   │   │   ├─ Nombre: "Combo Pollo Asado"                     │  │
+│  │    │   │   │   ├─ Precio unitario: $25000                         │  │
+│  │    │   │   │   ├─ Cantidad: 2                                     │  │
+│  │    │   │   │   ├─ Subtotal: $50000                                │  │
+│  │    │   │   │   └─ Botón Eliminar (X)                              │  │
+│  │    │   │   └─ ...                                                 │  │
+│  │    │   └─ CartFooter                                              │  │
+│  │    │       ├─ Subtotal: $50000                                    │  │
+│  │    │       ├─ Envío: $0                                           │  │
+│  │    │       ├─ Total: $50000                                       │  │
+│  │    │       └─ Botón "Proceder al Pago"                            │  │
+│  │    │                                                               │  │
+│  │    └─ navigateToHome()                                            │  │
+│  │       ├─ Intent(MainActivity)                                     │  │
+│  │       ├─ flags = CLEAR_TOP | SINGLE_TOP                           │  │
+│  │       ├─ startActivity(intent)                                    │  │
+│  │       └─ finish()                                                 │  │
+│  │                                                                     │  │
+│  │  ✅ CORRECTO: Tiene enableEdgeToEdge()                            │  │
+│  │  ⚠️  PROBLEMA: NO tiene MaterialTheme wrapper                     │  │
+│  │                                                                     │  │
+│  │  LOGS ESPERADOS:                                                   │  │
+│  │  ✓ D/CartActivity: CartActivity opened                            │  │
+│  │  ✓ D/CartActivity: Cart items loaded: 1 items                     │  │
+│  │  ✓ D/CartActivity:   - Combo Pollo Asado x2 = $50000              │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                          ESTADO DE CADA ACTIVIDAD                             ║
+║                                                                                ║
+║  ┌──────────────────────┬──────────────────┬──────────────┬──────────────┐   ║
+║  │ Actividad            │ enableEdgeToEdge │ MaterialTheme│ Estado       │   ║
+║  ├──────────────────────┼──────────────────┼──────────────┼──────────────┤   ║
+║  │ SplashActivity       │ ❌ NO            │ ❌ NO        │ ⚠️  PROBLEMA │   ║
+║  │ MainActivity         │ ✅ SÍ            │ ✅ SÍ        │ ✅ OK        │   ║
+║  │ ItemsListActivity    │ ❌ NO            │ ❌ NO        │ ⚠️  PROBLEMA │   ║
+║  │ DetailEachFoodActivity│ ✅ SÍ            │ ✅ SÍ        │ ✅ OK (FIJO) │   ║
+║  │ CartActivity         │ ✅ SÍ            │ ❌ NO        │ ⚠️  PROBLEMA │   ║
+║  └──────────────────────┴──────────────────┴──────────────┴──────────────┘   ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                            INFORMACIÓN QUE FLUYE                              ║
+║                                                                                ║
+║  SplashActivity → MainActivity                                               ║
+║    └─ Nada (solo navegación)                                                 ║
+║                                                                                ║
+║  MainActivity → ItemsListActivity                                            ║
+║    ├─ categoryId: Int → Intent extra "id" (String)                           ║
+║    └─ categoryName: String → Intent extra "title" (String)                   ║
+║                                                                                ║
+║  ItemsListActivity → DetailEachFoodActivity                                  ║
+║    └─ FoodModel (objeto completo) → Intent extra "object"                    ║
+║                                                                                ║
+║  DetailEachFoodActivity → CartActivity                                       ║
+║    ├─ item.numberInCart: Int (cantidad seleccionada)                         ║
+║    └─ item: FoodModel (objeto con cantidad actualizada)                      ║
+║                                                                                ║
+║  En SQLite (ManagmentCart)                                                   ║
+║    └─ Tabla: cart                                                            ║
+║       └─ Columnas: id, title, imagePath, price, numberInCart, ...           ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                              FIXES APLICADOS                                  ║
+║                                                                                ║
+║  ✅ Agregar enableEdgeToEdge() a DetailEachFoodActivity                       ║
+║  ✅ Agregar MaterialTheme wrapper a DetailEachFoodActivity                    ║
+║  ✅ Agregar enableEdgeToEdge() a CartActivity                                 ║
+║                                                                                ║
+║  ⏳ Pendiente: Agregar enableEdgeToEdge() a SplashActivity                    ║
+║  ⏳ Pendiente: Agregar MaterialTheme wrapper a SplashActivity                 ║
+║  ⏳ Pendiente: Agregar enableEdgeToEdge() a ItemsListActivity                 ║
+║  ⏳ Pendiente: Agregar MaterialTheme wrapper a ItemsListActivity              ║
+║  ⏳ Pendiente: Agregar MaterialTheme wrapper a CartActivity                   ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                            PRÓXIMOS PASOS                                     ║
+║                                                                                ║
+║  1. Ejecutar la app en emulador/dispositivo                                   ║
+║  2. Revisar los logs en logcat                                                ║
+║  3. Verificar que el flujo completo funciona                                  ║
+║  4. Si hay problemas, revisar los logs para identificar dónde se detiene      ║
+║  5. Aplicar los fixes necesarios                                              ║
+║  6. Hacer prueba end-to-end completa                                          ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝

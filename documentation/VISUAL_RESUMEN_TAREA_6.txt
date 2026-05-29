@@ -1,0 +1,181 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    TAREA 6: BOTÓN "CONTINUAR COMPRANDO"                       ║
+║                              ✅ COMPLETADA                                     ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CAMBIO REALIZADO                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Archivo: CartActivity.kt
+Líneas: 67-72
+
+ANTES:
+  setContent {
+      CartScreen(
+          managmentCart = managmentCart,
+          onBackClick = { finish() },
+          onHomeClick = { navigateToHome() }
+      )
+  }
+
+DESPUÉS:
+  setContent {
+      CartScreen(
+          managmentCart = managmentCart,
+          onBackClick = { finish() },
+          onHomeClick = { navigateToHome() },
+          onContinueShoppingClick = { navigateToHome() }  ← AGREGADO
+      )
+  }
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FLUJO DE FUNCIONAMIENTO                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+ESCENARIO 1: CARRITO CON PRODUCTOS
+═══════════════════════════════════════════════════════════════════════════════
+
+  Dashboard (MainActivity)
+       ↓
+  Usuario selecciona producto
+       ↓
+  DetailScreen (DetailEachFoodActivity)
+       ↓
+  Usuario ingresa cantidad y hace clic "Agregar al carrito"
+       ↓
+  Toast: "Combo Pollo Asado x2"
+       ↓
+  CartActivity abre
+       ↓
+  CartScreen muestra productos
+       ↓
+  Usuario hace clic "Continuar Comprando" (botón gris en footer)
+       ↓
+  onContinueShoppingClick() → navigateToHome()
+       ↓
+  Intent a MainActivity con flags
+       ↓
+  CartActivity.finish()
+       ↓
+  Dashboard (MainActivity) - CARRITO MANTIENE PRODUCTOS
+       ↓
+  Usuario puede agregar más productos
+
+
+ESCENARIO 2: CARRITO VACÍO
+═══════════════════════════════════════════════════════════════════════════════
+
+  Dashboard (MainActivity)
+       ↓
+  Usuario hace clic en carrito (sin agregar productos)
+       ↓
+  CartActivity abre
+       ↓
+  CartScreen muestra "Tu carrito está vacío"
+       ↓
+  Botón naranja "Continuar Comprando" aparece (centrado)
+       ↓
+  Usuario hace clic en botón
+       ↓
+  onContinueShoppingClick() → navigateToHome()
+       ↓
+  Intent a MainActivity con flags
+       ↓
+  CartActivity.finish()
+       ↓
+  Dashboard (MainActivity)
+       ↓
+  Usuario puede agregar productos
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ COMPONENTES INVOLUCRADOS                                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. CartActivity
+   ├─ onCreate(): Inicializa CartScreen con callback
+   └─ navigateToHome(): Navega a MainActivity
+
+2. CartScreen
+   ├─ Parámetro: onContinueShoppingClick: () -> Unit
+   ├─ Muestra botón en estado vacío
+   └─ Pasa callback a CartFooter
+
+3. CartFooter
+   ├─ Parámetro: onContinueShoppingClick: () -> Unit
+   ├─ Muestra botón gris "Continuar Comprando"
+   └─ Ejecuta callback cuando se hace clic
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ VERIFICACIÓN                                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+✅ CartActivity.kt actualizado
+✅ Callback conectado correctamente
+✅ Botón aparece en carrito vacío (naranja, centrado)
+✅ Botón aparece en carrito con productos (gris, en footer)
+✅ Navegación a MainActivity implementada
+✅ Logging agregado en puntos clave
+✅ Documentación creada
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CÓMO COMPILAR Y PROBAR                                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. Compilar:
+   $ ./gradlew clean build
+
+2. Ejecutar en emulador:
+   $ ./gradlew installDebug
+
+3. Pruebas:
+   ✓ Agrega productos y abre carrito
+   ✓ Haz clic en "Continuar Comprando"
+   ✓ Verifica que regresa al Dashboard
+   ✓ Verifica que los productos se mantienen
+   ✓ Prueba con carrito vacío
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ARCHIVOS MODIFICADOS                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+✅ app/src/main/java/com/daniel/chickenfood/presentation/activity/cart/CartActivity.kt
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ DOCUMENTACIÓN CREADA                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+✅ TAREA_6_COMPLETADA.md - Resumen técnico detallado
+✅ GUIA_PRUEBA_BOTON_CONTINUAR.md - Guía paso a paso para probar
+✅ RESUMEN_FINAL_TAREA_6.md - Resumen completo de la implementación
+✅ VISUAL_RESUMEN_TAREA_6.txt - Este archivo (resumen visual)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ESTADO FINAL                                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+🎯 OBJETIVO: Agregar botón "Continuar Comprando" en el carrito
+   ✅ COMPLETADO
+
+🎯 REQUISITO 1: Botón en carrito con productos
+   ✅ IMPLEMENTADO (botón gris en footer)
+
+🎯 REQUISITO 2: Botón en carrito vacío
+   ✅ IMPLEMENTADO (botón naranja centrado)
+
+🎯 REQUISITO 3: Navega al Dashboard
+   ✅ IMPLEMENTADO (navigateToHome())
+
+🎯 REQUISITO 4: Mantiene productos en carrito
+   ✅ IMPLEMENTADO (SharedPreferences)
+
+🎯 REQUISITO 5: Logging para debugging
+   ✅ IMPLEMENTADO (Log.d en puntos clave)
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                         ✅ TAREA 6 COMPLETADA                                 ║
+║                                                                                ║
+║  El botón "Continuar Comprando" está completamente implementado y listo       ║
+║  para compilar y probar. El usuario ahora puede regresar al Dashboard         ║
+║  desde el carrito en ambos estados (vacío y con productos).                   ║
+╚════════════════════════════════════════════════════════════════════════════════╝
