@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.auth)
+    implementation(libs.ui)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

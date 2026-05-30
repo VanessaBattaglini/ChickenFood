@@ -21,6 +21,7 @@ ui = "1.11.1"
 gson = "2.10.1"
 constraintlayout = "2.2.1"
 playServicesAuth = "21.0.0"
+uiVersion = "1.11.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -76,6 +77,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 
 # 🔐 Google Play Services Auth
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 private const val TAG = "MainViewModel"
+private const val LOAD_TIMEOUT_MS = 10000L  // 10 segundos timeout
 
 class MainViewModel(
     private val repository: MainRepository
@@ -27,6 +29,9 @@ class MainViewModel(
         MutableStateFlow(false)
     val isLoadingBanners =
         _isLoadingBanners.asStateFlow()
+    private val _bannerError =
+        MutableStateFlow<String?>(null)
+    val bannerError = _bannerError.asStateFlow()
 
     // ---------------------------------
     // CATEGORIES
@@ -39,6 +44,9 @@ class MainViewModel(
         MutableStateFlow(false)
     val isLoadingCategories =
         _isLoadingCategories.asStateFlow()
+    private val _categoryError =
+        MutableStateFlow<String?>(null)
+    val categoryError = _categoryError.asStateFlow()
 
     // ---------------------------------
     // FOODS
@@ -59,11 +67,19 @@ class MainViewModel(
         MutableStateFlow<String?>(null)
     val selectedCategoryId =
         _selectedCategoryId.asStateFlow()
+    
+    // ---------------------------------
+    // OVERALL LOADING STATE
+    // ---------------------------------
+    private val _isLoadingAll = MutableStateFlow(true)
+    val isLoadingAll = _isLoadingAll.asStateFlow()
+    
     // ---------------------------------
     // INIT
     // ---------------------------------
 
     init {
+        Log.d(TAG, "MainViewModel initialized, starting data load...")
         loadBanners()
         loadCategories()
     }
@@ -76,18 +92,31 @@ class MainViewModel(
         viewModelScope.launch {
             try {
                 _isLoadingBanners.value = true
-                Log.d(TAG, "Loading banners...")
-                val list = repository.loadBanner().first()
-                Log.d(TAG, "Banners loaded: ${list.size} items")
-                list.forEachIndexed { index, banner ->
-                    Log.d(TAG, "Banner $index: image='${banner.image}'")
+                _bannerError.value = null
+                Log.d(TAG, "Loading banners... (timeout: ${LOAD_TIMEOUT_MS}ms)")
+                
+                val list = withTimeoutOrNull(LOAD_TIMEOUT_MS) {
+                    repository.loadBanner().first()
                 }
-                _banners.value = list
+                
+                if (list != null) {
+                    Log.d(TAG, "✅ Banners loaded successfully: ${list.size} items")
+                    list.forEachIndexed { index, banner ->
+                        Log.d(TAG, "  Banner $index: image='${banner.image}'")
+                    }
+                    _banners.value = list
+                } else {
+                    Log.w(TAG, "⚠️ Banners load timed out after ${LOAD_TIMEOUT_MS}ms")
+                    _bannerError.value = "Timeout loading banners"
+                    _banners.value = emptyList()
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading banners", e)
-                e.printStackTrace()
+                Log.e(TAG, "❌ Error loading banners: ${e.message}", e)
+                _bannerError.value = e.message ?: "Unknown error loading banners"
+                _banners.value = emptyList()
             } finally {
                 _isLoadingBanners.value = false
+                updateOverallLoadingState()
             }
         }
     }
@@ -100,18 +129,31 @@ class MainViewModel(
         viewModelScope.launch {
             try {
                 _isLoadingCategories.value = true
-                Log.d(TAG, "Loading categories...")
-                val list = repository.loadCategory().first()
-                Log.d(TAG, "Categories loaded: ${list.size} items")
-                list.forEachIndexed { index, category ->
-                    Log.d(TAG, "Category $index: id=${category.id}, name='${category.name}', imagePath='${category.imagePath}'")
+                _categoryError.value = null
+                Log.d(TAG, "Loading categories... (timeout: ${LOAD_TIMEOUT_MS}ms)")
+                
+                val list = withTimeoutOrNull(LOAD_TIMEOUT_MS) {
+                    repository.loadCategory().first()
                 }
-                _categories.value = list
+                
+                if (list != null) {
+                    Log.d(TAG, "✅ Categories loaded successfully: ${list.size} items")
+                    list.forEachIndexed { index, category ->
+                        Log.d(TAG, "  Category $index: id=${category.id}, name='${category.name}'")
+                    }
+                    _categories.value = list
+                } else {
+                    Log.w(TAG, "⚠️ Categories load timed out after ${LOAD_TIMEOUT_MS}ms")
+                    _categoryError.value = "Timeout loading categories"
+                    _categories.value = emptyList()
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading categories", e)
-                e.printStackTrace()
+                Log.e(TAG, "❌ Error loading categories: ${e.message}", e)
+                _categoryError.value = e.message ?: "Unknown error loading categories"
+                _categories.value = emptyList()
             } finally {
                 _isLoadingCategories.value = false
+                updateOverallLoadingState()
             }
         }
     }
@@ -127,19 +169,36 @@ class MainViewModel(
         viewModelScope.launch {
             try {
                 _isLoadingFoods.value = true
-                Log.d(TAG, "Loading foods for category: $categoryId")
-                val list = repository.loadFiltered(categoryId).first()
-                Log.d(TAG, "Foods loaded: ${list.size} items for category $categoryId")
-                list.forEachIndexed { index, food ->
-                    Log.d(TAG, "Food $index: id='${food.id}', title='${food.title}', categoryId='${food.categoryId}'")
+                Log.d(TAG, "Loading foods for category: $categoryId (timeout: ${LOAD_TIMEOUT_MS}ms)")
+                
+                val list = withTimeoutOrNull(LOAD_TIMEOUT_MS) {
+                    repository.loadFiltered(categoryId).first()
                 }
-                _foods.value = list
+                
+                if (list != null) {
+                    Log.d(TAG, "✅ Foods loaded successfully: ${list.size} items for category $categoryId")
+                    list.forEachIndexed { index, food ->
+                        Log.d(TAG, "  Food $index: id='${food.id}', title='${food.title}'")
+                    }
+                    _foods.value = list
+                } else {
+                    Log.w(TAG, "⚠️ Foods load timed out after ${LOAD_TIMEOUT_MS}ms for category $categoryId")
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading foods for category $categoryId", e)
-                e.printStackTrace()
+                Log.e(TAG, "❌ Error loading foods for category $categoryId: ${e.message}", e)
             } finally {
                 _isLoadingFoods.value = false
             }
         }
+    }
+    
+    // ---------------------------------
+    // UPDATE OVERALL LOADING STATE
+    // ---------------------------------
+    
+    private fun updateOverallLoadingState() {
+        val isLoading = _isLoadingBanners.value || _isLoadingCategories.value
+        _isLoadingAll.value = isLoading
+        Log.d(TAG, "Overall loading state: $isLoading (banners: ${_isLoadingBanners.value}, categories: ${_isLoadingCategories.value})")
     }
 }

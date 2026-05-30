@@ -8,13 +8,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,9 +28,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.helper.AuthHelper
 import com.daniel.chickenfood.helper.ManagmentCart
@@ -95,8 +104,13 @@ fun MainScreen(
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
+    val bannerError by viewModel.bannerError.collectAsState()
+    
     val categories by viewModel.categories.collectAsState()
     val isLoadingCategories by viewModel.isLoadingCategories.collectAsState()
+    val categoryError by viewModel.categoryError.collectAsState()
+    
+    val isLoadingAll by viewModel.isLoadingAll.collectAsState()
 
     var selectedItem by rememberSaveable { mutableStateOf("Home") }
     var cartItemCount by rememberSaveable { mutableIntStateOf(0) }
@@ -104,6 +118,33 @@ fun MainScreen(
     // Cargar contador de carrito
     val managmentCart = ManagmentCart(androidx.compose.ui.platform.LocalContext.current)
     cartItemCount = managmentCart.getListCart().size
+
+    // Si está cargando, mostrar loading screen
+    if (isLoadingAll) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.darkBrown)),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = colorResource(R.color.orange),
+                    modifier = Modifier.size(50.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Cargando...",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+            }
+        }
+        return
+    }
 
     Scaffold(
         modifier = Modifier
@@ -143,6 +184,28 @@ fun MainScreen(
             item {
                 SearchBar()
             }
+            
+            // Mostrar errores si existen
+            if (!bannerError.isNullOrEmpty()) {
+                item {
+                    Text(
+                        "Error cargando banners: $bannerError",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+            
+            if (!categoryError.isNullOrEmpty()) {
+                item {
+                    Text(
+                        "Error cargando categorías: $categoryError",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+            
             item {
                 Banner(
                     banners = banners,
