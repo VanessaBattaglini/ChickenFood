@@ -3,6 +3,7 @@ package com.daniel.chickenfood.presentation.activity.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,15 +38,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import com.daniel.chickenfood.R
+import com.daniel.chickenfood.domain.model.UserTokenModel
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
+import com.daniel.chickenfood.presentation.viewModel.TokenState
+import com.daniel.chickenfood.presentation.viewModel.TokenViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "SignUpActivity"
 
@@ -51,6 +60,7 @@ class SignUpActivity : BaseActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
+    private val tokenViewModel: TokenViewModel by viewModel()
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -62,6 +72,7 @@ class SignUpActivity : BaseActivity() {
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
             Log.e(TAG, "Google Sign-Up falló: ${e.statusCode}", e)
+            Toast.makeText(this, "Error en autenticación: ${e.statusCode}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -79,6 +90,24 @@ class SignUpActivity : BaseActivity() {
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        // Observar cambios en el estado de guardado de token
+        lifecycleScope.launch {
+            tokenViewModel.saveTokenState.collect { state ->
+                when (state) {
+                    is TokenState.Success -> {
+                        Log.d(TAG, "Token guardado exitosamente")
+                        Toast.makeText(this@SignUpActivity, "Autenticación exitosa", Toast.LENGTH_SHORT).show()
+                        navigateToDashboard()
+                    }
+                    is TokenState.Error -> {
+                        Log.e(TAG, "Error guardando token: ${state.message}")
+                        Toast.makeText(this@SignUpActivity, "Error: ${state.message}", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {}
+                }
+            }
+        }
 
         setContent {
             SignUpScreen(
@@ -100,10 +129,41 @@ class SignUpActivity : BaseActivity() {
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "Firebase Auth exitoso: ${firebaseAuth.currentUser?.email}")
-                    navigateToDashboard()
+                    val user = firebaseAuth.currentUser
+                    Log.d(TAG, "Firebase Auth exitoso: ${user?.email}")
+                    
+                    // Obtener el token de Firebase
+                    user?.getIdToken(false)?.addOnCompleteListener { tokenTask ->
+                        if (tokenTask.isSuccessful) {
+                            val firebaseToken = tokenTask.result?.token ?: ""
+                            Log.d(TAG, "Firebase token obtenido: ${firebaseToken.take(20)}...")
+                            
+                            // Crear modelo de token con toda la información
+                            val userToken = UserTokenModel(
+                                userId = user.uid,
+                                email = user.email ?: "",
+                                googleIdToken = idToken,
+                                firebaseToken = firebaseToken,
+                                refreshToken = "", // Firebase lo maneja internamente
+                                displayName = user.displayName ?: "",
+                                photoUrl = user.photoUrl?.toString() ?: "",
+                                createdAt = System.currentTimeMillis(),
+                                lastLoginAt = System.currentTimeMillis(),
+                                expiresAt = 0L, // Firebase maneja la expiración
+                                isActive = true
+                            )
+                            
+                            Log.d(TAG, "Guardando token en Firebase para usuario: ${user.uid}")
+                            // Guardar token usando TokenViewModel
+                            tokenViewModel.saveUserToken(userToken)
+                        } else {
+                            Log.e(TAG, "Error obteniendo Firebase token: ${tokenTask.exception?.message}")
+                            Toast.makeText(this, "Error obteniendo token", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 } else {
                     Log.e(TAG, "Firebase Auth falló: ${task.exception?.message}")
+                    Toast.makeText(this, "Error en autenticación: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -115,6 +175,7 @@ class SignUpActivity : BaseActivity() {
         finish()
     }
 }
+
 
 @Composable
 fun SignUpScreen(

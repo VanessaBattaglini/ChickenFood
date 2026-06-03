@@ -55,6 +55,29 @@ object AuthHelper {
     }
     
     /**
+     * Obtiene el token de sesión de Firebase (para autenticación en backend)
+     */
+    fun getFirebaseToken(callback: (String?) -> Unit) {
+        firebaseAuth.currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result?.token
+                Log.d(TAG, "Firebase token obtained: ${token?.take(20)}...")
+                callback(token)
+            } else {
+                Log.e(TAG, "Failed to get Firebase token: ${task.exception?.message}")
+                callback(null)
+            }
+        }
+    }
+    
+    /**
+     * Obtiene el refresh token de Firebase
+     */
+    fun getRefreshToken(): String? {
+        return firebaseAuth.currentUser?.getIdToken(false).toString()
+    }
+    
+    /**
      * Cierra la sesión del usuario
      */
     fun signOut() {
@@ -75,5 +98,22 @@ object AuthHelper {
             "isEmailVerified" to user?.isEmailVerified,
             "metadata" to user?.metadata?.creationTimestamp
         )
+    }
+    
+    /**
+     * Obtiene el proveedor de autenticación del usuario
+     */
+    fun getAuthProvider(): String? {
+        val user = firebaseAuth.currentUser
+        return user?.providerData?.firstOrNull()?.providerId
+    }
+    
+    /**
+     * Verifica si el usuario se autenticó con Google
+     */
+    fun isGoogleAuthenticated(): Boolean {
+        val provider = getAuthProvider()
+        Log.d(TAG, "Auth provider: $provider")
+        return provider == "google.com"
     }
 }

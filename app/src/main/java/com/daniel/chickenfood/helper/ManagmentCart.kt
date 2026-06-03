@@ -126,4 +126,15 @@ class ManagmentCart(val context: Context) {
             return 0.0
         }
     }
+
+    fun clearCart() {
+        try {
+            val emptyList: ArrayList<FoodModel> = ArrayList()
+            tinyDB.putListObject("CartList", emptyList)
+            Log.d(TAG, "Cart cleared completely")
+            Toast.makeText(context, "Carrito limpiado", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in clearCart: ${e.message}", e)
+        }
+    }
 }

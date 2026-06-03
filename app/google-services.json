@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "435903794761-u2l64mks60tbpqgl00nsf7593shbaaom.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daniel.chickenfood",
+            "certificate_hash": "dfab77332429b0bf5c2f53dfaf32023586b5ebf0"
+          }
+        },
+        {
           "client_id": "435903794761-mpivar6jf5bgds85sjf3ij19gep23ue0.apps.googleusercontent.com",
           "client_type": 3
         }

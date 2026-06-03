@@ -193,6 +193,7 @@ fun CartScreen(
             CartFooter(
                 totalPrice = totalPrice,
                 itemCount = cartItems.size,
+                managmentCart = managmentCart,
                 onContinueShoppingClick = onContinueShoppingClick
             )
         }
@@ -206,9 +207,7 @@ fun CartItemCard(
     managmentCart: ManagmentCart,
     changeListener: ChangeNumberItemsListener
 ) {
-    var currentItems by remember { mutableStateOf(managmentCart.getListCart()) }
-    
-    Log.d(TAG, "CartItemCard rendering: ${item.title} at index $index")
+    Log.d(TAG, "CartItemCard rendering: ${item.title} at index $index, quantity: ${item.numberInCart}")
 
     Card(
         modifier = Modifier
@@ -268,13 +267,16 @@ fun CartItemCard(
                 }
             }
 
-            // Delete Button
+            // Delete Button - Elimina el item COMPLETAMENTE
             Button(
                 onClick = {
                     Log.d(TAG, "Delete button clicked for: ${item.title} at index $index")
-                    managmentCart.removeItem(currentItems, index, changeListener)
-                    currentItems = managmentCart.getListCart()
-                    Log.d(TAG, "Item deleted, remaining items: ${currentItems.size}")
+                    val currentList = managmentCart.getListCart()
+                    // Eliminar el item completamente del carrito
+                    if (index >= 0 && index < currentList.size) {
+                        managmentCart.removeItem(currentList, index, changeListener)
+                        Log.d(TAG, "Item deleted completely, remaining items: ${currentList.size - 1}")
+                    }
                 },
                 modifier = Modifier.size(40.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -292,6 +294,7 @@ fun CartItemCard(
 fun CartFooter(
     totalPrice: Double,
     itemCount: Int,
+    managmentCart: ManagmentCart,
     onContinueShoppingClick: () -> Unit = {}
 ) {
     Column(
@@ -354,7 +357,12 @@ fun CartFooter(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { },
+                onClick = { 
+                    Log.d(TAG, "Proceder al Pago clicked")
+                    // TODO: Implementar lógica de pago aquí
+                    // Por ahora: limpiar carrito como ejemplo
+                    managmentCart.clearCart()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.orange)

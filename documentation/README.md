@@ -1,172 +1,139 @@
-# 🍗 ChickenFood - Aplicación de E-commerce de Comida Rápida
+# 📚 Documentación de ChickenFood
 
-## 📋 Descripción
+Bienvenido a la documentación de la aplicación ChickenFood. Esta documentación está organizadapor el tipo de usuario y las actividades que realiza en la app.
 
-ChickenFood es una aplicación Android moderna para comprar comida rápida. Implementa **Clean Architecture** con **MVVM** y utiliza **Jetpack Compose** para la interfaz de usuario.
+## 📖 Índice Principal
 
-## 🏗️ Arquitectura
+### 🔐 Autenticación
 
-```
-┌─────────────────────────────────────────┐
-│      PRESENTATION LAYER (UI)            │
-│  Activities, Composables, ViewModels    │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│      DOMAIN LAYER (Lógica de Negocio)   │
-│  Interfaces, Modelos, Use Cases         │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│      DATA LAYER (Fuentes de Datos)      │
-│  Repositorios, Firebase, Local Storage  │
-└─────────────────────────────────────────┘
-```
+- **[Flujo de Autenticación](./01_AUTENTICACION.md)** - Cómo funciona el login con Google Sign-In
 
-## 🛠️ Tecnologías Utilizadas
+### 👤 Usuarios
 
-- **Lenguaje**: Kotlin
-- **UI Framework**: Jetpack Compose
-- **Arquitectura**: Clean Architecture + MVVM
-- **Base de Datos**: Firebase Realtime Database
-- **Inyección de Dependencias**: Koin
-- **Serialización**: Gson
-- **Corrutinas**: Kotlin Coroutines
-- **Reactive**: Flow & StateFlow
+#### 1. Usuario No Premium (Sin Autenticación)
+- **[Guía del Usuario No Premium](./02_USUARIO_NO_PREMIUM.md)** - Actividades y funciones disponibles
 
-## 📱 Pantallas
+#### 2. Usuario Premium (Con Autenticación)
+- **[Guía del Usuario Premium](./03_USUARIO_PREMIUM.md)** - Todas las actividades, métodos y características
 
-1. **SplashActivity**: Pantalla de inicio
-2. **MainActivity**: Dashboard con categorías y banners
-3. **ItemsListActivity**: Lista de productos por categoría
-4. **DetailEachFoodActivity**: Detalle del producto
-5. **CartActivity**: Carrito de compras
+### 💳 Sistema de Recompensas
 
-## 🔄 Flujo de la Aplicación
+- **[Sistema de Puntos](./04_SISTEMA_RECOMPENSAS.md)** - Cómo funciona el cashback 10% y niveles
 
-```
-SplashActivity
-    ↓
-MainActivity (Dashboard)
-    ↓ (click en categoría)
-ItemsListActivity (Lista de productos)
-    ↓ (click en producto)
-DetailEachFoodActivity (Detalle + Cantidad)
-    ↓ (click "Agregar al carrito")
-CartActivity (Carrito de compras)
-```
+### 🔧 Configuración y Solución de Problemas
 
-## 📦 Estructura de Carpetas
+- **[Configuración Inicial](./05_CONFIGURACION_INICIAL.md)** - Pasos para configurar la app
+- **[Solución de Errores](./06_SOLUCION_ERRORES.md)** - Errores comunes y soluciones
 
-```
-app/src/main/java/com/daniel/chickenfood/
-├── ChickenFoodApp.kt
-├── di/
-│   └── AppModule.kt
-├── presentation/
-│   ├── activity/
-│   │   ├── dashboard/
-│   │   ├── itemList/
-│   │   ├── detailEachFood/
-│   │   ├── cart/
-│   │   └── splash/
-│   └── viewModel/
-├── domain/
-│   ├── model/
-│   └── reposity/
-├── data/
-│   └── repository/
-└── helper/
-```
+### 👨‍💻 Para Desarrolladores
 
-## 🔌 Inyección de Dependencias (Koin)
-
-```kotlin
-val appModule = module {
-    single { Gson() }
-    single { FirebaseDatabase.getInstance() }
-    single<MainRepository> { MainRepositoryImpl(get(), get()) }
-    viewModel { MainViewModel(repository = get()) }
-}
-```
-
-## 📊 Modelos de Datos
-
-### BannerModel
-```kotlin
-data class BannerModel(
-    val image: String
-)
-```
-
-### CategoryModel
-```kotlin
-data class CategoryModel(
-    val id: Int,
-    val imagePath: String,
-    val name: String
-)
-```
-
-### FoodModel
-```kotlin
-data class FoodModel(
-    val id: Int,
-    val title: String,
-    val price: Int,
-    val imagePath: String,
-    val categoryId: Int,
-    val description: String,
-    val star: Double,
-    val timeValue: Int,
-    val calorie: Int,
-    var numberInCart: Int
-)
-```
-
-## 🎯 Funcionalidades Principales
-
-✅ Ver categorías de productos
-✅ Ver lista de productos por categoría
-✅ Ver detalle de cada producto
-✅ Ajustar cantidad de productos
-✅ Agregar productos al carrito
-✅ Ver carrito con detalles de compra
-✅ Aumentar/disminuir cantidad desde el carrito
-✅ Calcular subtotal y total
-
-## 📚 Documentación Completa
-
-Para una documentación detallada sobre:
-- Arquitectura Clean Architecture
-- Inyección de Dependencias
-- Flujo de datos
-- Conexiones entre archivos
-- Conceptos clave
-
-Ver: **DOCUMENTACION_PROYECTO.md**
-
-## 🚀 Cómo Ejecutar
-
-1. Clonar el repositorio
-2. Abrir en Android Studio
-3. Sincronizar Gradle
-4. Ejecutar en emulador o dispositivo
-
-## 📝 Requisitos
-
-- Android SDK 24+
-- Kotlin 1.8+
-- Gradle 8.0+
-
-## 👨‍💻 Autor
-
-Daniel Alvarado
-
-## 📄 Licencia
-
-Este proyecto es de código abierto.
+- **[Arquitectura del Proyecto](./ARQUITECTURA.md)** - Estructura del código y patrones
+- **[API Reference](./API_REFERENCE.md)** - Métodos y clases principales
 
 ---
 
-**Última actualización**: 26 de Mayo de 2026
+## 📱 Flujo General de la Aplicación
+
+```
+┌─────────────────────────────────────┐
+│     SplashActivity (Bienvenida)     │
+└─────────────────────────────────────┘
+           ↓
+    ┌──────┴──────┐
+    ↓             ↓
+  SIN AUTH      CON AUTH (Google)
+    ↓             ↓
+┌─────────┐  ┌──────────────┐
+│Dashboard│  │SignUpActivity│
+│(Usuario │  │ (Autenticación
+│  NO     │  │  con Google) │
+│Premium) │  └──────────────┘
+└─────────┘        ↓
+    ↓         ┌──────────────┐
+    │         │  Dashboard   │
+    │         │ (Usuario     │
+    │         │  Premium)    │
+    │         └──────────────┘
+    │              ↓
+    └──────┬───────┘
+           ↓
+    ┌─────────────┐
+    │ Ver Comidas │
+    └─────────────┘
+           ↓
+    ┌──────────────┐
+    │ Seleccionar  │
+    │   Comida     │
+    └──────────────┘
+           ↓
+    ┌──────────────┐
+    │Ver Detalle &│
+    │Agregar Carrito
+    └──────────────┘
+           ↓
+    ┌──────────────┐
+    │  Ver Carrito │
+    └──────────────┘
+           ↓
+         (Premium)
+           ↓
+    ┌──────────────┐
+    │  Usar Puntos │
+    │  (Descuento) │
+    └──────────────┘
+           ↓
+    ┌──────────────┐
+    │ Confirmar    │
+    │  Compra      │
+    └──────────────┘
+```
+
+---
+
+## 🎯 Guía Rápida
+
+### Quiero saber...
+
+- **Cómo un usuario se autentica** → Ver [Flujo de Autenticación](./01_AUTENTICACION.md)
+- **Qué puede hacer un usuario sin login** → Ver [Guía del Usuario No Premium](./02_USUARIO_NO_PREMIUM.md)
+- **Qué puede hacer un usuario con login** → Ver [Guía del Usuario Premium](./03_USUARIO_PREMIUM.md)
+- **Cómo funcionan los puntos** → Ver [Sistema de Recompensas](./04_SISTEMA_RECOMPENSAS.md)
+- **Cómo configurar la app** → Ver [Configuración Inicial](./05_CONFIGURACION_INICIAL.md)
+- **Error en autenticación** → Ver [Solución de Errores](./06_SOLUCION_ERRORES.md)
+- **Arquitectura del código** → Ver [Arquitectura del Proyecto](./ARQUITECTURA.md)
+
+---
+
+## 📊 Estado del Proyecto
+
+**Completado:** 75%
+
+✅ Autenticación con Google Sign-In
+✅ Sistema de recompensas con 10% cashback
+✅ UI responsiva
+✅ Gestión de tokens
+⏳ UI para mostrar puntos (próximamente)
+⏳ Canje de puntos en carrito (próximamente)
+
+---
+
+## 🔄 Próximos Pasos
+
+1. Resolver ApiException: 10 en Google Sign-In (Ver [Solución de Errores](./06_SOLUCION_ERRORES.md))
+2. Crear UI para mostrar puntos en Dashboard
+3. Integrar canje de puntos en carrito
+4. Crear pantalla de historial de transacciones
+
+---
+
+## 📞 Soporte
+
+Si tienes preguntas o encuentras errores, consulta:
+1. [Solución de Errores](./06_SOLUCION_ERRORES.md)
+2. [Preguntas Frecuentes](#)
+
+---
+
+**Última actualización:** 2026-06-01
+**Versión:** 1.0
+
