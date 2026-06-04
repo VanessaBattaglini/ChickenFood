@@ -124,4 +124,43 @@ object RewardsHelper {
         val money = calculateDiscountFromPoints(points)
         return String.format("$%.2f", money)
     }
+    
+    /**
+     * Calcula el progreso hacia el siguiente nivel (0.0 a 1.0)
+     */
+    fun getLevelProgress(totalPoints: Int): Float {
+        val thresholds = listOf(0, 1, 100, 500, 1000)  // Regular, Bronce, Plata, Oro, Platino
+        
+        val currentIndex = when {
+            totalPoints >= 1000 -> 4  // Platino (máximo)
+            totalPoints >= 500 -> 3   // Oro
+            totalPoints >= 100 -> 2   // Plata
+            totalPoints > 0 -> 1      // Bronce
+            else -> 0                 // Regular
+        }
+        
+        // Si es Platino, mostrar 100%
+        if (currentIndex == 4) return 1f
+        
+        val currentThreshold = thresholds[currentIndex]
+        val nextThreshold = thresholds[currentIndex + 1]
+        val progress = (totalPoints - currentThreshold).toFloat() / (nextThreshold - currentThreshold)
+        
+        return progress.coerceIn(0f, 1f)
+    }
+    
+    /**
+     * Calcula los puntos faltantes para el siguiente nivel
+     */
+    fun getPointsToNextLevel(totalPoints: Int): Int {
+        val nextThreshold = when {
+            totalPoints >= 1000 -> Int.MAX_VALUE  // Platino es el máximo
+            totalPoints >= 500 -> 1000             // Siguiente es Platino (1000)
+            totalPoints >= 100 -> 500              // Siguiente es Oro (500)
+            totalPoints > 0 -> 100                 // Siguiente es Plata (100)
+            else -> 1                              // Siguiente es Bronce (1)
+        }
+        
+        return (nextThreshold - totalPoints).coerceAtLeast(0)
+    }
 }

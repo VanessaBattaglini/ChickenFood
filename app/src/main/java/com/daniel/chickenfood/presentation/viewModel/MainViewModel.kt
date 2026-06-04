@@ -75,6 +75,18 @@ class MainViewModel(
     val isLoadingAll = _isLoadingAll.asStateFlow()
     
     // ---------------------------------
+    // SEARCH
+    // ---------------------------------
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    
+    private val _searchResults = MutableStateFlow<List<FoodModel>>(emptyList())
+    val searchResults = _searchResults.asStateFlow()
+    
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
+    
+    // ---------------------------------
     // INIT
     // ---------------------------------
 
@@ -200,5 +212,73 @@ class MainViewModel(
         val isLoading = _isLoadingBanners.value || _isLoadingCategories.value
         _isLoadingAll.value = isLoading
         Log.d(TAG, "Overall loading state: $isLoading (banners: ${_isLoadingBanners.value}, categories: ${_isLoadingCategories.value})")
+    }
+    
+    // ---------------------------------
+    // SEARCH FOODS
+    // ---------------------------------
+    
+    fun searchFoods(query: String) {
+        _searchQuery.value = query
+        
+        if (query.isBlank()) {
+            _searchResults.value = emptyList()
+            _isSearching.value = false
+            Log.d(TAG, "Search cleared")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _isSearching.value = true
+                Log.d(TAG, "Searching foods for query: '$query'")
+                
+                // Buscar en todas las categorías
+                val allFoods = mutableListOf<FoodModel>()
+                
+                // Obtener todas las categorías
+                val allCategories = _categories.value
+                Log.d(TAG, "Searching across ${allCategories.size} categories")
+                
+                for (category in allCategories) {
+                    try {
+                        val foodsInCategory = withTimeoutOrNull(LOAD_TIMEOUT_MS) {
+                            repository.loadFiltered(category.id.toString()).first()
+                        }
+                        
+                        if (foodsInCategory != null) {
+                            allFoods.addAll(foodsInCategory)
+                            Log.d(TAG, "  Loaded ${foodsInCategory.size} foods from category '${category.name}'")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error loading foods from category '${category.name}': ${e.message}")
+                    }
+                }
+                
+                // Filtrar por query (búsqueda case-insensitive)
+                val filtered = allFoods.filter { food ->
+                    food.title.lowercase().contains(query.lowercase()) ||
+                    food.description.lowercase().contains(query.lowercase())
+                }
+                
+                Log.d(TAG, "✅ Search results: ${filtered.size} items found for '$query'")
+                filtered.forEachIndexed { index, food ->
+                    Log.d(TAG, "  Result $index: '${food.title}' from category ${food.categoryId}")
+                }
+                
+                _searchResults.value = filtered
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Error searching foods: ${e.message}", e)
+                _searchResults.value = emptyList()
+            } finally {
+                _isSearching.value = false
+            }
+        }
+    }
+    
+    fun clearSearch() {
+        _searchQuery.value = ""
+        _searchResults.value = emptyList()
+        Log.d(TAG, "Search cleared")
     }
 }

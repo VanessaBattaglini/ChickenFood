@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,11 +38,14 @@ import androidx.compose.ui.unit.sp
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.helper.AuthHelper
 import com.daniel.chickenfood.helper.ManagmentCart
+import com.daniel.chickenfood.domain.model.FoodModel
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.cart.CartActivity
+import com.daniel.chickenfood.presentation.activity.detailEachFood.DetailEachFoodActivity
 import com.daniel.chickenfood.presentation.activity.itemList.ItemsListActivity
 import com.daniel.chickenfood.presentation.activity.splash.SplashActivity
 import com.daniel.chickenfood.presentation.viewModel.MainViewModel
+import com.daniel.chickenfood.presentation.viewModel.RewardsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 private const val TAG = "MainActivity"
@@ -59,6 +63,9 @@ class MainActivity : BaseActivity() {
             MainScreen(
                 onCategoryClick = { categoryId, categoryName ->
                     navigateToItemsList(categoryId, categoryName)
+                },
+                onSearchResultClick = { food ->
+                    navigateToDetail(food)
                 },
                 onCartClick = {
                     navigateToCart()
@@ -80,6 +87,15 @@ class MainActivity : BaseActivity() {
         startActivity(intent)
     }
 
+    private fun navigateToDetail(food: FoodModel) {
+        Log.d(TAG, "navigateToDetail called with food id=${food.id}, title=${food.title}")
+        val intent = Intent(this, DetailEachFoodActivity::class.java).apply {
+            putExtra("food", food)
+        }
+        Log.d(TAG, "Starting DetailEachFoodActivity with food=${food.title}")
+        startActivity(intent)
+    }
+
     private fun navigateToCart() {
         Log.d(TAG, "navigateToCart called")
         val intent = Intent(this, CartActivity::class.java)
@@ -98,7 +114,9 @@ class MainActivity : BaseActivity() {
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
+    rewardsViewModel: RewardsViewModel = koinViewModel(),
     onCategoryClick: (Int, String) -> Unit = { _, _ -> },
+    onSearchResultClick: (FoodModel) -> Unit = {},
     onCartClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
 ) {
@@ -112,8 +130,24 @@ fun MainScreen(
     
     val isLoadingAll by viewModel.isLoadingAll.collectAsState()
 
+    // Rewards state
+    val userRewards by rewardsViewModel.userRewards.collectAsState()
+    val rewardsLoading by rewardsViewModel.isLoading.collectAsState()
+
     var selectedItem by rememberSaveable { mutableStateOf("Home") }
     var cartItemCount by rememberSaveable { mutableIntStateOf(0) }
+    
+    // ✅ FIX: Obtener currentUser sin persistencia (no usar rememberSaveable para auth)
+    // Se obtiene fresh cada vez que el composable se recompone
+    val currentUser = AuthHelper.getCurrentUser()?.uid
+    
+    // Cargar rewards cuando el usuario está autenticado
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            Log.d(TAG, "Loading rewards for user: $currentUser")
+            rewardsViewModel.loadUserRewards(currentUser)
+        }
+    }
     
     // Cargar contador de carrito
     val managmentCart = ManagmentCart(androidx.compose.ui.platform.LocalContext.current)
@@ -154,6 +188,7 @@ fun MainScreen(
             TopBar(
                 modifier = Modifier
                     .padding(top = 35.dp),
+                showLogout = currentUser != null,
                 onLogoutClick = onLogoutClick
             )
         },
@@ -182,7 +217,22 @@ fun MainScreen(
             )
         ) {
             item {
-                SearchBar()
+                SearchBar(
+                    onSearchResultClick = { food ->
+                        Log.d(TAG, "Search result clicked: id=${food.id}, title=${food.title}")
+                        onSearchResultClick(food)
+                    }
+                )
+            }
+            
+            // Mostrar PointsCard si el usuario está autenticado
+            if (currentUser != null) {
+                item {
+                    PointsCard(
+                        userRewards = userRewards,
+                        modifier = Modifier
+                    )
+                }
             }
             
             // Mostrar errores si existen

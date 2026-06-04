@@ -29,6 +29,7 @@ import com.daniel.chickenfood.R
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
+    showLogout: Boolean = false,
     onMenuClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
@@ -99,15 +100,18 @@ fun TopBar(
                     tint = Color.Unspecified
                 )
             }
-            IconButton(
-                onClick = onLogoutClick
-            ) {
+            // Solo mostrar botón Logout si está autenticado
+            if (showLogout) {
+                IconButton(
+                    onClick = onLogoutClick
+                ) {
 
-                Icon(
-                    painter = painterResource(R.drawable.ic_logout),
-                    contentDescription = "Logout",
-                    tint = Color.White
-                )
+                    Icon(
+                        painter = painterResource(R.drawable.ic_logout),
+                        contentDescription = "Logout",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }

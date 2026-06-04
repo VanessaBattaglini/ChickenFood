@@ -47,7 +47,7 @@ fun GetStartedButtons(
         ) {
             Text(
                 text = "Empecemos",
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 color = Color.White
             )
         }

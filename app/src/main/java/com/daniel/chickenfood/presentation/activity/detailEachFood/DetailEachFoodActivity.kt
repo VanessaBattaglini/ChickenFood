@@ -32,7 +32,15 @@ class DetailEachFoodActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        item = intent.getSerializableExtra("object") as FoodModel
+        val foodExtra = intent.getSerializableExtra("food") as? FoodModel
+        
+        if (foodExtra == null) {
+            Log.e(TAG, "FoodModel is null - Intent extra 'food' not found")
+            finish()
+            return
+        }
+        
+        item = foodExtra
         managmentCart = ManagmentCart(applicationContext)
 
         // ✅ SIEMPRE resetear numberInCart a 0 para que DetailScreen lo inicie en 1
