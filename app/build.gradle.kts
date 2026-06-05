@@ -7,11 +7,7 @@ plugins {
 
 android {
     namespace = "com.daniel.chickenfood"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36 // Ajustado a una versión estable si 36 da problemas
 
     defaultConfig {
         applicationId = "com.daniel.chickenfood"
@@ -51,10 +47,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    // BOM
-    implementation(platform(libs.firebase.bom))
-
+    
     // Firebase
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.realtime.db)
@@ -62,17 +57,16 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.storage)
+    
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.coil.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.ui)
     implementation(libs.gson)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.auth)
-    implementation(libs.ui)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.UserTokenModel
+import com.daniel.chickenfood.helper.AppConfigs
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
 import com.daniel.chickenfood.presentation.viewModel.TokenState
@@ -149,7 +150,7 @@ class SignUpActivity : BaseActivity() {
                                 expiresAt = 0L, // Firebase maneja la expiración
                                 isActive = true
                             )
-                            
+
                             Log.d(TAG, "Guardando token en Firebase para usuario: ${user.uid}")
                             // Guardar token usando TokenViewModel
                             tokenViewModel.saveUserToken(userToken)
@@ -168,6 +169,7 @@ class SignUpActivity : BaseActivity() {
     private fun navigateToDashboard() {
         Log.d(TAG, "Navegando al Dashboard")
         val intent = Intent(this, MainActivity::class.java)
+
         startActivity(intent)
         finish()
     }

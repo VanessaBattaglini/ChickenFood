@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daniel.chickenfood.domain.model.UserTokenModel
 import com.daniel.chickenfood.domain.reposity.TokenRepository
+import com.daniel.chickenfood.helper.AppConfigs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,7 +64,8 @@ class TokenViewModel(
                 tokenRepository.saveUserToken(token).collect { success ->
                     if (success) {
                         Log.d(TAG, "Token guardado exitosamente para ${token.userId}")
-                        _saveTokenState.value = TokenState.Success("Token guardado exitosamente")
+                        _saveTokenState.value = TokenState.Success(token)
+                        AppConfigs.saveToken(token)
                     } else {
                         Log.e(TAG, "Error al guardar token")
                         _saveTokenState.value = TokenState.Error("Error al guardar token")
@@ -108,7 +110,7 @@ class TokenViewModel(
                 tokenRepository.updateFirebaseToken(userId, firebaseToken, refreshToken).collect { success ->
                     if (success) {
                         Log.d(TAG, "Firebase token actualizado para $userId")
-                        _updateTokenState.value = TokenState.Success("Token actualizado exitosamente")
+                        _updateTokenState.value = TokenState.Success(UserTokenModel())
                     } else {
                         Log.e(TAG, "Error al actualizar Firebase token")
                         _updateTokenState.value = TokenState.Error("Error al actualizar token")
@@ -173,7 +175,7 @@ class TokenViewModel(
                 tokenRepository.deleteUserToken(userId).collect { success ->
                     if (success) {
                         Log.d(TAG, "Logout exitoso para $userId")
-                        _logoutState.value = TokenState.Success("Logout exitoso")
+                        _logoutState.value = TokenState.Success(UserTokenModel())
                     } else {
                         Log.e(TAG, "Error al realizar logout")
                         _logoutState.value = TokenState.Error("Error al realizar logout")
@@ -198,7 +200,7 @@ class TokenViewModel(
                 tokenRepository.revokeToken(userId, tokenId).collect { success ->
                     if (success) {
                         Log.d(TAG, "Token revocado exitosamente: $tokenId")
-                        _logoutState.value = TokenState.Success("Token revocado exitosamente")
+                        _logoutState.value = TokenState.Success(UserTokenModel())
                     } else {
                         Log.e(TAG, "Error al revocar token")
                         _logoutState.value = TokenState.Error("Error al revocar token")
@@ -230,7 +232,7 @@ class TokenViewModel(
 sealed class TokenState {
     object Idle : TokenState()
     object Loading : TokenState()
-    data class Success(val data: Any) : TokenState()
+    data class Success(val data: UserTokenModel) : TokenState()
     data class Error(val message: String) : TokenState()
 }
 

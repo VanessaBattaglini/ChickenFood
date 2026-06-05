@@ -39,6 +39,7 @@ import com.daniel.chickenfood.R
 import com.daniel.chickenfood.helper.AuthHelper
 import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.domain.model.FoodModel
+import com.daniel.chickenfood.helper.AppConfigs
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.cart.CartActivity
 import com.daniel.chickenfood.presentation.activity.detailEachFood.DetailEachFoodActivity
@@ -139,13 +140,13 @@ fun MainScreen(
     
     // ✅ FIX: Obtener currentUser sin persistencia (no usar rememberSaveable para auth)
     // Se obtiene fresh cada vez que el composable se recompone
-    val currentUser = AuthHelper.getCurrentUser()?.uid
+    val currentUser = AppConfigs.appToken
     
     // Cargar rewards cuando el usuario está autenticado
     LaunchedEffect(currentUser) {
         if (currentUser != null) {
             Log.d(TAG, "Loading rewards for user: $currentUser")
-            rewardsViewModel.loadUserRewards(currentUser)
+            rewardsViewModel.loadUserRewards(currentUser.userId)
         }
     }
     
