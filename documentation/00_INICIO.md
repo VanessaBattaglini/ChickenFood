@@ -1,7 +1,7 @@
 # 🍗 ChickenFood App - Documentación
 
-**Última actualización**: 2 de Junio, 2026  
-**Estado actual**: ✅ Completamente funcional
+**Última actualización**: 12 de Junio, 2026  
+**Estado actual**: ✅ Completamente funcional (Acceso público habilitado)
 
 ---
 
@@ -16,34 +16,34 @@
 
 2. **[02_AUTENTICACION.md](02_AUTENTICACION.md)** 🔐
    - Google Sign-In passwordless
-   - Gestión de tokens
    - Login/Logout
+   - Autenticación opcional
 
-3. **[03_BUSCADOR.md](03_BUSCADOR.md)** 🔍
+3. **[03_ACCESO_PUBLICO.md](03_ACCESO_PUBLICO.md)** ⭐ NUEVO
+   - Ver productos SIN autenticación
+   - Reglas Firebase para lectura pública
+   - Cómo se configuran los datos públicos
+
+4. **[04_BUSCADOR.md](04_BUSCADOR.md)** 🔍
    - Buscar productos en tiempo real
    - Navegación a detalle desde búsqueda
    - Ejemplos de búsqueda
 
-4. **[04_CARRITO_COMPRAS.md](04_CARRITO_COMPRAS.md)** 🛒
+5. **[05_CARRITO_COMPRAS.md](05_CARRITO_COMPRAS.md)** 🛒
    - Agregar/eliminar productos
    - Gestión de cantidades
-   - Checkout
+   - Checkout (requiere autenticación)
 
-5. **[05_SISTEMA_PUNTOS.md](05_SISTEMA_PUNTOS.md)** 💰
+6. **[06_SISTEMA_PUNTOS.md](06_SISTEMA_PUNTOS.md)** 💰
    - Cashback 10% por compra
    - Niveles de usuario
    - Canjear puntos
 
-6. **[06_ARQUITECTURA_TECNICA.md](06_ARQUITECTURA_TECNICA.md)** 🏗️
+7. **[07_ARQUITECTURA_TECNICA.md](07_ARQUITECTURA_TECNICA.md)** 🏗️
    - Estructura del proyecto
    - ViewModels y Repositories
    - Firebase integration
    - Flujos de datos
-
-7. **[07_CONFIGURACION_INICIAL.md](07_CONFIGURACION_INICIAL.md)** ⚙️
-   - Configurar Firebase
-   - Obtener SHA-1
-   - Google Cloud Console setup
 
 8. **[08_SOLUCION_ERRORES.md](08_SOLUCION_ERRORES.md)** ⚠️
    - Errores comunes
@@ -54,18 +54,18 @@
 
 ## 🎯 Funcionalidades Principales
 
-### Para Usuario No Autenticado
+### Para Cualquier Usuario (Autenticado o No)
 - ✅ Ver productos por categoría
 - ✅ Buscar productos
 - ✅ Ver detalle de productos
 - ✅ Agregar al carrito
 - ✅ Ver carrito
-- ✅ Checkout (sin recompensas)
+- ✅ **Acceder a imágenes desde la base de datos**
 
-### Para Usuario Autenticado
-- ✅ Todo lo anterior, más:
+### Adicional para Usuario Autenticado
 - ✅ Ver saldo de puntos
 - ✅ Ver nivel de usuario (Regular/Bronce/Plata/Oro/Platino)
+- ✅ Realizar checkout
 - ✅ Accumular 10% cashback por compra
 - ✅ Canjear puntos por descuentos
 
@@ -169,11 +169,12 @@ app/src/main/java/com/daniel/chickenfood/
 
 | Componente | Estado | Última actualización |
 |-----------|--------|---------------------|
-| Autenticación | ✅ Funcional | 2 de Junio |
-| Búsqueda | ✅ Funcional | 2 de Junio |
-| Carrito | ✅ Funcional | 2 de Junio |
-| Puntos | ✅ Funcional | 2 de Junio |
-| Dashboard | ✅ Funcional | 2 de Junio |
+| Acceso Público a Datos | ✅ Funcional | 12 de Junio |
+| Autenticación | ✅ Funcional | 12 de Junio |
+| Búsqueda | ✅ Funcional | 12 de Junio |
+| Carrito | ✅ Funcional | 12 de Junio |
+| Puntos | ✅ Funcional | 12 de Junio |
+| Dashboard | ✅ Funcional | 12 de Junio |
 
 ---
 

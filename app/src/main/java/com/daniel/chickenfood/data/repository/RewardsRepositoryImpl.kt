@@ -2,6 +2,7 @@ package com.daniel.chickenfood.data.repository
 
 import android.util.Log
 import com.daniel.chickenfood.domain.model.PointsTransactionModel
+import com.daniel.chickenfood.domain.model.TransactionModel
 import com.daniel.chickenfood.domain.model.UserRewardsModel
 import com.daniel.chickenfood.domain.reposity.RewardsRepository
 import com.google.firebase.database.DataSnapshot
@@ -280,6 +281,126 @@ class RewardsRepositoryImpl(
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "getPointsBalance cancelled: ${error.message}")
+                close(error.toException())
+            }
+        }
+        ref.addValueEventListener(listener)
+        awaitClose { ref.removeEventListener(listener) }
+    }
+
+    override fun addPoints(userId: String, points: Int, reason: String): Flow<Int> = callbackFlow {
+        try {
+            Log.d(TAG, "Adding $points points to user $userId (reason: $reason)")
+            
+            // Obtener recompensas actuales
+            val rewardsRef = database.getReference("users/$userId/rewards")
+            rewardsRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val json = gson.toJson(snapshot.value)
+                    val currentRewards = if (snapshot.exists()) {
+                        gson.fromJson(json, UserRewardsModel::class.java).copy(userId = userId)
+                    } else {
+                        UserRewardsModel(userId = userId)
+                    }
+                    
+                    // Actualizar recompensas
+                    val newBalance = currentRewards.pointsBalance + points
+                    val newRewards = currentRewards.copy(
+                        totalPoints = currentRewards.totalPoints + points,
+                        pointsBalance = newBalance,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                    
+                    rewardsRef.setValue(newRewards).addOnCompleteListener { updateTask ->
+                        if (updateTask.isSuccessful) {
+                            Log.d(TAG, "Points added successfully. New balance: $newBalance")
+                            trySend(newBalance).isSuccess
+                        } else {
+                            Log.e(TAG, "Failed to add points: ${updateTask.exception?.message}")
+                            close(updateTask.exception ?: Exception("Unknown error"))
+                        }
+                        close()
+                    }
+                } else {
+                    Log.e(TAG, "Failed to get rewards: ${task.exception?.message}")
+                    close(task.exception ?: Exception("Unknown error"))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addPoints: ${e.message}", e)
+            close(e)
+        }
+    }
+
+    override fun deductPoints(userId: String, points: Int, reason: String): Flow<Int> = callbackFlow {
+        try {
+            Log.d(TAG, "Deducting $points points from user $userId (reason: $reason)")
+            
+            // Obtener recompensas actuales
+            val rewardsRef = database.getReference("users/$userId/rewards")
+            rewardsRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val json = gson.toJson(snapshot.value)
+                    val currentRewards = if (snapshot.exists()) {
+                        gson.fromJson(json, UserRewardsModel::class.java).copy(userId = userId)
+                    } else {
+                        UserRewardsModel(userId = userId)
+                    }
+                    
+                    // Validar saldo suficiente
+                    if (currentRewards.pointsBalance < points) {
+                        Log.w(TAG, "Insufficient points: ${currentRewards.pointsBalance} < $points")
+                        close(Exception("Insufficient points"))
+                        return@addOnCompleteListener
+                    }
+                    
+                    // Actualizar recompensas
+                    val newBalance = currentRewards.pointsBalance - points
+                    val newRewards = currentRewards.copy(
+                        pointsBalance = newBalance,
+                        pointsSpent = currentRewards.pointsSpent + points,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                    
+                    rewardsRef.setValue(newRewards).addOnCompleteListener { updateTask ->
+                        if (updateTask.isSuccessful) {
+                            Log.d(TAG, "Points deducted successfully. New balance: $newBalance")
+                            trySend(newBalance).isSuccess
+                        } else {
+                            Log.e(TAG, "Failed to deduct points: ${updateTask.exception?.message}")
+                            close(updateTask.exception ?: Exception("Unknown error"))
+                        }
+                        close()
+                    }
+                } else {
+                    Log.e(TAG, "Failed to get rewards: ${task.exception?.message}")
+                    close(task.exception ?: Exception("Unknown error"))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in deductPoints: ${e.message}", e)
+            close(e)
+        }
+    }
+
+    override fun getCurrentPoints(userId: String): Flow<Int> = callbackFlow {
+        val ref = database.getReference("users/$userId/rewards/pointsBalance")
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val balance = snapshot.getValue(Int::class.java) ?: 0
+                    Log.d(TAG, "Current points for $userId: $balance")
+                    trySend(balance).isSuccess
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error in getCurrentPoints: ${e.message}", e)
+                    close(e)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "getCurrentPoints cancelled: ${error.message}")
                 close(error.toException())
             }
         }

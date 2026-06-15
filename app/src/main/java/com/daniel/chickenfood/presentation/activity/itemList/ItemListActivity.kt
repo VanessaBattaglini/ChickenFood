@@ -63,7 +63,7 @@ class ItemsListActivity : BaseActivity() {
     private fun navigateToDetail(food: FoodModel) {
         Log.d(TAG, "Navigating to detail for food: ${food.title}")
         val intent = Intent(this, DetailEachFoodActivity::class.java).apply {
-            putExtra("object", food)
+            putExtra("food", food)
         }
         startActivity(intent)
     }

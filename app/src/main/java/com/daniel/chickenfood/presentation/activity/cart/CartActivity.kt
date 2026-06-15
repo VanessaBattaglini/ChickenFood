@@ -41,9 +41,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.FoodModel
+import com.daniel.chickenfood.domain.model.OrderItemModel
 import com.daniel.chickenfood.helper.ChangeNumberItemsListener
 import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
+import com.daniel.chickenfood.presentation.activity.checkout.CheckoutActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
 
 private const val TAG = "CartActivity"
@@ -69,7 +71,8 @@ class CartActivity : BaseActivity() {
                 managmentCart = managmentCart,
                 onBackClick = { finish() },
                 onHomeClick = { navigateToHome() },
-                onContinueShoppingClick = { navigateToHome() }
+                onContinueShoppingClick = { navigateToHome() },
+                onCheckoutClick = { navigateToCheckout() }
             )
         }
     }
@@ -82,6 +85,39 @@ class CartActivity : BaseActivity() {
         startActivity(intent)
         finish()
     }
+
+    private fun navigateToCheckout() {
+        Log.d(TAG, "Navigating to CheckoutActivity")
+        val cartItems = managmentCart.getListCart()
+        val cartTotal = managmentCart.getTotalFee()
+        
+        Log.d(TAG, "Cart items: ${cartItems.size}, total: $cartTotal")
+        
+        // Crear OrderItemModels desde los FoodModels del carrito
+        val orderItems = cartItems.map { food ->
+            OrderItemModel(
+                foodId = food.id,
+                title = food.title,
+                price = food.price.toDouble(),
+                quantity = food.numberInCart,
+                subtotal = (food.price * food.numberInCart).toDouble(),
+                imagePath = food.imagePath
+            )
+        }
+        
+        val intent = Intent(this, CheckoutActivity::class.java).apply {
+            // Pasar datos como Parceable o reconvertir en CheckoutActivity
+            putExtra("itemCount", orderItems.size)
+            putExtra("cartTotal", cartTotal)
+            putExtra("userPoints", 500) // TODO: Obtener del RewardsViewModel
+            
+            // Pasar cada item como strings serializados
+            orderItems.forEachIndexed { index, item ->
+                putExtra("item_$index", "${item.title}|${item.price}|${item.quantity}|${item.subtotal}|${item.foodId}")
+            }
+        }
+        startActivity(intent)
+    }
 }
 
 @Composable
@@ -89,7 +125,8 @@ fun CartScreen(
     managmentCart: ManagmentCart,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit = {},
-    onContinueShoppingClick: () -> Unit = {}
+    onContinueShoppingClick: () -> Unit = {},
+    onCheckoutClick: () -> Unit = {}
 ) {
     var cartItems by remember { mutableStateOf(managmentCart.getListCart()) }
     var totalPrice by remember { mutableStateOf(managmentCart.getTotalFee()) }
@@ -194,7 +231,8 @@ fun CartScreen(
                 totalPrice = totalPrice,
                 itemCount = cartItems.size,
                 managmentCart = managmentCart,
-                onContinueShoppingClick = onContinueShoppingClick
+                onContinueShoppingClick = onContinueShoppingClick,
+                onCheckoutClick = onCheckoutClick
             )
         }
     }
@@ -295,7 +333,8 @@ fun CartFooter(
     totalPrice: Double,
     itemCount: Int,
     managmentCart: ManagmentCart,
-    onContinueShoppingClick: () -> Unit = {}
+    onContinueShoppingClick: () -> Unit = {},
+    onCheckoutClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -359,9 +398,7 @@ fun CartFooter(
             Button(
                 onClick = { 
                     Log.d(TAG, "Proceder al Pago clicked")
-                    // TODO: Implementar lógica de pago aquí
-                    // Por ahora: limpiar carrito como ejemplo
-                    managmentCart.clearCart()
+                    onCheckoutClick()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(

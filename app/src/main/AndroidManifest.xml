@@ -25,6 +25,9 @@
             android:name=".presentation.activity.cart.CartActivity"
             android:exported="false" />
         <activity
+            android:name=".presentation.activity.checkout.CheckoutActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.activity.detailEachFood.DetailEachFoodActivity"
             android:exported="false" />
         <activity

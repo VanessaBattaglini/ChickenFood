@@ -1,8 +1,8 @@
 # 🍗 ChickenFood - Documentación Oficial
 
-**Última actualización**: 3 de Junio, 2026  
-**Versión**: 2.1 (Con Hotfix Critical)  
-**Estado**: ✅ Completamente funcional (Auth State Fixed)
+**Última actualización**: 12 de Junio, 2026  
+**Versión**: 2.2 (Acceso Público a Datos)  
+**Estado**: ✅ Completamente funcional (Sin auth requerida para ver productos)
 
 ---
 
@@ -22,79 +22,59 @@ Aprende rápidamente cómo usar la app con ejemplos prácticos.
 
 **[02_AUTENTICACION.md](02_AUTENTICACION.md)** - Google Sign-In Passwordless  
 - Google Sign-In sin contraseña
-- Gestión de tokens (JWT → Firebase)
-- Login / Logout
+- Login/Logout
+- Autenticación opcional: ver productos sin login
 - Modelos: UserTokenModel, SignUpActivity, TokenViewModel
 
-**[UI_CONDICIONADA_AUTENTICACION.md](UI_CONDICIONADA_AUTENTICACION.md)** - UI Basada en Autenticación  
-- PointsCard visible solo para usuarios autenticados
-- Botón Logout visible solo para autenticados
-- Dashboard diferente según auth status
+**[03_ACCESO_PUBLICO.md](03_ACCESO_PUBLICO.md)** - Acceso Público a Datos ⭐ NUEVO  
+- Ver productos, categorías, banners SIN autenticación
+- Reglas Firebase para lectura pública
+- Comprar requiere autenticación
 
 ---
 
 ### 🛍️ Características Principales
 
-**[03_BUSCADOR.md](03_BUSCADOR.md)** - Búsqueda en Tiempo Real  
+**[04_BUSCADOR.md](04_BUSCADOR.md)** - Búsqueda en Tiempo Real  
 - Buscar productos (case-insensitive)
 - Resultados dinámicos en dropdown
 - Navegación a DetailScreen
-- Ejemplos: "pollo", "hamburguesa", "pizza"
+- Funciona sin autenticación
 
-**[04_CARRITO_COMPRAS.md](04_CARRITO_COMPRAS.md)** - Gestión del Carrito  
-- Agregar productos
-- Eliminar completamente (no decremental)
-- Limpiar carrito después de pagar
+**[05_CARRITO_COMPRAS.md](05_CARRITO_COMPRAS.md)** - Gestión del Carrito  
+- Agregar/eliminar productos
+- Carrito disponible para todos
+- Checkout requiere autenticación
 - Cálculo de total
 
-**[05_SISTEMA_PUNTOS.md](05_SISTEMA_PUNTOS.md)** - Cashback y Recompensas  
-- 10-15% cashback por compra
+**[06_SISTEMA_PUNTOS.md](06_SISTEMA_PUNTOS.md)** - Cashback y Recompensas  
+- 10-15% cashback por compra (solo autenticados)
 - 5 niveles: Regular, Bronce, Plata, Oro, Platino
-- Tarjeta de puntos (PointsCard)
+- PointsCard (solo para autenticados)
 - Conversión: 1 punto = $0.01
 
 ---
 
 ### 🏗️ Técnica y Arquitectura
 
-**[06_ARQUITECTURA_TECNICA.md](06_ARQUITECTURA_TECNICA.md)** - Stack Completo  
+**[07_ARQUITECTURA_TECNICA.md](07_ARQUITECTURA_TECNICA.md)** - Stack Completo  
 - Patrón MVVM
 - Inyección con Koin
-- Firebase Realtime Database
+- Firebase Realtime Database + Reglas de Seguridad
 - Jetpack Compose
 - Estructura de carpetas completa
 
 ---
 
-### 🐛 Bugs Resueltos
-
-**[FIX_AUTH_STATE_PERSISTENCE.md](FIX_AUTH_STATE_PERSISTENCE.md)** - 🔴 CRÍTICO: Auth State Persistence  
-- Problema: PointsCard y Logout visibles para no-autenticados
-- Causa: `rememberSaveable` persistía estado viejo
-- Solución: Verificación fresca de Firebase
-- Status: ✅ RESUELTO
-- Ver también: [RESUMEN_HOTFIX_3.md](RESUMEN_HOTFIX_3.md) | [TEST_AUTH_FIX.md](TEST_AUTH_FIX.md)
-
-**[FIX_SEARCH_TO_DETAIL_BUG.md](FIX_SEARCH_TO_DETAIL_BUG.md)** - Fix: NullPointerException en Búsqueda  
-- Problema: Mismatch de Intent keys
-- Solución: Cambiar key + null validation
-- Status: ✅ Resuelto
-
----
-
 ### ⚠️ Solución de Problemas
 
-**[07_SOLUCION_ERRORES.md](07_SOLUCION_ERRORES.md)** - Errores Comunes y Soluciones  
+**[08_SOLUCION_ERRORES.md](08_SOLUCION_ERRORES.md)** - Errores Comunes y Soluciones  
 1. ApiException 10 (Google Sign-In)
 2. Productos no aparecen
 3. Carrito no se limpia
 4. Selector Google no aparece
 5. Puntos no se actualizan
 6. Búsqueda no encuentra
-7. App crashea en Detail
-8. Logout no funciona
-9. PointsCard no aparece
-10. Buscador lento
 
 ---
 
@@ -102,18 +82,19 @@ Aprende rápidamente cómo usar la app con ejemplos prácticos.
 
 ### Para Usuario/QA
 - Cómo usar → [01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md)
-- Errores → [07_SOLUCION_ERRORES.md](07_SOLUCION_ERRORES.md)
+- Errores → [08_SOLUCION_ERRORES.md](08_SOLUCION_ERRORES.md)
 
 ### Para Desarrollador
-- Arquitectura → [06_ARQUITECTURA_TECNICA.md](06_ARQUITECTURA_TECNICA.md)
+- Arquitectura → [07_ARQUITECTURA_TECNICA.md](07_ARQUITECTURA_TECNICA.md)
 - Autenticación → [02_AUTENTICACION.md](02_AUTENTICACION.md)
-- Buscador → [03_BUSCADOR.md](03_BUSCADOR.md)
-- Carrito → [04_CARRITO_COMPRAS.md](04_CARRITO_COMPRAS.md)
-- Puntos → [05_SISTEMA_PUNTOS.md](05_SISTEMA_PUNTOS.md)
+- Acceso Público → [03_ACCESO_PUBLICO.md](03_ACCESO_PUBLICO.md) ⭐ NUEVO
+- Buscador → [04_BUSCADOR.md](04_BUSCADOR.md)
+- Carrito → [05_CARRITO_COMPRAS.md](05_CARRITO_COMPRAS.md)
+- Puntos → [06_SISTEMA_PUNTOS.md](06_SISTEMA_PUNTOS.md)
 
 ### Para DevOps/Setup
-- Solución de errores → [07_SOLUCION_ERRORES.md](07_SOLUCION_ERRORES.md)
-- Arquitectura técnica → [06_ARQUITECTURA_TECNICA.md](06_ARQUITECTURA_TECNICA.md)
+- Solución de errores → [08_SOLUCION_ERRORES.md](08_SOLUCION_ERRORES.md)
+- Arquitectura técnica → [07_ARQUITECTURA_TECNICA.md](07_ARQUITECTURA_TECNICA.md)
 
 ---
 
@@ -121,13 +102,17 @@ Aprende rápidamente cómo usar la app con ejemplos prácticos.
 
 ### ✅ Completamente Funcionales
 
-- [x] Autenticación Google passwordless
+#### Públicas (sin autenticación)
 - [x] Ver productos por categoría
 - [x] Búsqueda en tiempo real
 - [x] Ver detalle de producto
 - [x] Agregar/eliminar del carrito
-- [x] Calcular total del carrito
-- [x] Simular pago (checkout)
+- [x] Ver carrito
+- [x] Acceder a imágenes desde la base de datos
+
+#### Requieren Autenticación
+- [x] Autenticación Google passwordless
+- [x] Calcular total y checkout
 - [x] Sistema de 10% cashback
 - [x] 5 niveles de usuario
 - [x] Tarjeta de puntos en Dashboard
@@ -203,13 +188,14 @@ ChickenFood/
 
 | Componente | Estado | Última actualización |
 |-----------|--------|---------------------|
-| Autenticación | ✅ Funcional | 2 de Junio |
-| Dashboard | ✅ Funcional | 2 de Junio |
-| Búsqueda | ✅ Funcional | 2 de Junio |
-| Carrito | ✅ Funcional | 2 de Junio |
-| Puntos | ✅ Funcional | 2 de Junio |
-| Detalle | ✅ Funcional | 2 de Junio |
-| Compilación | ✅ Build Success | 2 de Junio |
+| Acceso Público a Datos | ✅ Funcional | 12 de Junio |
+| Autenticación | ✅ Funcional | 12 de Junio |
+| Dashboard | ✅ Funcional | 12 de Junio |
+| Búsqueda | ✅ Funcional | 12 de Junio |
+| Carrito | ✅ Funcional | 12 de Junio |
+| Puntos | ✅ Funcional | 12 de Junio |
+| Detalle | ✅ Funcional | 12 de Junio |
+| Compilación | ✅ Build Success | 12 de Junio |
 
 ---
 

@@ -40,4 +40,19 @@ interface RewardsRepository {
      * Obtiene el saldo de puntos disponibles
      */
     fun getPointsBalance(userId: String): Flow<Int>
+    
+    /**
+     * Suma puntos al usuario (por compra con tarjeta)
+     */
+    fun addPoints(userId: String, points: Int, reason: String): Flow<Int> // Retorna nuevo saldo
+    
+    /**
+     * Resta puntos del usuario (pago con puntos)
+     */
+    fun deductPoints(userId: String, points: Int, reason: String): Flow<Int> // Retorna nuevo saldo
+    
+    /**
+     * Obtiene los puntos actuales del usuario
+     */
+    fun getCurrentPoints(userId: String): Flow<Int>
 }

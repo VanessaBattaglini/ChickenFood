@@ -1,6 +1,70 @@
 # CHANGELOG - Historial de Cambios
 
-## Hotfix 3 (3 de Junio, 2026) - FIX CRÍTICO: Auth State Persistence
+## [2.2] - 12 de Junio, 2026 - ACCESO PÚBLICO A DATOS
+
+### 🌐 NUEVA FEATURE - Lectura Pública de Datos
+- ✅ **Usuarios sin autenticación pueden ver productos, categorías e imágenes**
+- ✅ **Configuradas reglas de Firebase** para acceso público
+- ✅ **Búsqueda y detalle funcionan sin login**
+- ✅ **Checkout aún requiere autenticación (seguro)**
+
+### 🛡️ Reglas Firebase Implementadas
+```json
+{
+  "banners": { ".read": true, ".write": false },
+  "category": { ".read": true, ".write": false },
+  "foods": { ".read": true, ".write": false },
+  "orders": { ".read": "auth != null", ".write": "auth != null" },
+  "rewards": { ".read": "auth != null", ".write": "auth != null" },
+  "users": { ".read": "auth != null && auth.uid == $uid", ".write": "auth != null && auth.uid == $uid" }
+}
+```
+
+### 📚 Documentación
+- ✅ **NUEVA**: `03_ACCESO_PUBLICO.md` - Guía completa de acceso público
+- ✅ **ACTUALIZADO**: `README.md` - Índice con nueva feature
+- ✅ **ACTUALIZADO**: `00_INICIO.md` - Funcionalidades organizadas
+- ✅ **ACTUALIZADO**: `02_AUTENTICACION.md` - Autenticación opcional
+- ✅ **RENUMERADOS**: Todos los documentos posteriores
+- ✅ **ELIMINADOS**: 4 documentos de hotfixes obsoletos
+
+### 🗑️ Documentos Eliminados (Obsoletos)
+```
+❌ UI_CONDICIONADA_AUTENTICACION.md    - Información integrada en 02_AUTENTICACION
+❌ FIX_AUTH_STATE_PERSISTENCE.md       - Hotfix ya resuelto en v2.1
+❌ RESUMEN_HOTFIX_3.md                 - Hotfix ya resuelto en v2.1
+❌ TEST_AUTH_FIX.md                    - Hotfix ya resuelto en v2.1
+```
+
+### 📊 Cambios en Funcionalidades
+```
+ANTES (v2.1):
+- "Empecemos" → Dashboard (limitado)
+- "Inscribete" → Dashboard completo (con puntos)
+
+DESPUÉS (v2.2):
+- "Empecemos" → Dashboard completo (sin puntos, sin checkout)
+- "Inscribete" → Dashboard completo (con puntos, con checkout)
+```
+
+### 🎯 Impacto
+| Aspecto | Antes | Después |
+|--------|-------|---------|
+| Usuarios sin auth | ❌ No pueden ver productos | ✅ Ven todo excepto comprar |
+| Imágenes públicas | ❌ Requieren auth | ✅ Sin auth |
+| Búsqueda | ❌ Requiere auth | ✅ Sin auth |
+| Carrito | ❌ Requiere auth | ✅ Sin auth |
+| Checkout | - | ✅ Requiere auth |
+| Puntos | - | ✅ Solo si autenticado |
+
+### ✅ Estado
+- ✅ BUILD SUCCESSFUL
+- ✅ 0 errores
+- ✅ Código sin cambios (solo reglas Firebase)
+- ✅ Documentación reorganizada
+- ✅ Todos los links actualizados
+
+---
 
 ### 🐛 Bug Arreglado
 - ✅ **PointsCard y Logout visibles para usuarios NO autenticados** (CRÍTICO)

@@ -2,7 +2,9 @@
 
 **Estado**: ✅ Completamente funcional  
 **Tipo**: Passwordless (sin contraseña)  
-**Proveedor**: Google + Firebase
+**Proveedor**: Google + Firebase  
+**Obligatoria para**: Compras y acceso a puntos
+**Opcional para**: Ver productos, imágenes, búsqueda
 
 ---
 
@@ -11,15 +13,14 @@
 ### Flujo Simple
 
 ```
-Usuario toca "Inscribete"
+Usuario abre app
     ↓
-Google Sign-In selector (elige cuenta)
-    ↓
-Firebase recibe JWT de Google
-    ↓
-Firebase autentica usuario
-    ↓
-Dashboard con puntos
+┌─ Opción 1: "Empecemos" ─┐      ┌─ Opción 2: "Inscribete" ─┐
+│ Sin autenticación       │      │ Con autenticación       │
+│ Ver productos ✅        │      │ Google Sign-In          │
+│ Sin puntos ❌          │      │ Firebase autentica      │
+│ Sin checkout ❌        │      │ Dashboard con puntos ✅ │
+└─────────────────────────┘      └─────────────────────────┘
 ```
 
 ### Sin Contraseña
@@ -27,6 +28,7 @@ Dashboard con puntos
 - ✅ No necesita contraseña
 - ✅ Usa cuentas ya autenticadas en el dispositivo
 - ✅ Rápido y seguro
+- ✅ Puede navegar sin login
 
 ---
 
@@ -261,9 +263,25 @@ Usuario autenticado ✅
 
 ---
 
-## Flujo Completo de Login
+## Flujo Completo
 
-### Caso 1: Primera Vez (Nuevo Usuario)
+### Caso 1: Usuario sin Autenticarse ("Empecemos")
+
+```
+SplashScreen
+    ↓ [Empecemos]
+Dashboard abierto
+├─ Ver productos ✅
+├─ Buscar productos ✅
+├─ Ver imágenes ✅
+├─ Agregar al carrito ✅
+├─ Ver carrito ✅
+├─ PointsCard OCULTO ❌
+├─ Botón Logout OCULTO ❌
+├─ Intenta checkout → Redirige a SignUp
+```
+
+### Caso 2: Primera Vez (Nuevo Usuario)
 
 ```
 SplashScreen
@@ -283,13 +301,15 @@ Firebase devuelve FirebaseUser
 Guardar en /users/{uid}/tokens
     ↓ Navega a MainActivity
 Dashboard muestra:
-- SearchBar
-- PointsCard (0 puntos)
-- Banner
-- Categorías
+├─ SearchBar ✅
+├─ PointsCard con 0 puntos ✅
+├─ Botón Logout ✅
+├─ Banner ✅
+├─ Categorías ✅
+└─ Puede completar compra ✅
 ```
 
-### Caso 2: Usuario Devolviendo (Cuenta Existente)
+### Caso 3: Usuario Devolviendo (Cuenta Existente)
 
 ```
 SplashScreen
@@ -306,7 +326,7 @@ Firebase.signInWithCredential()
     ↓ Firebase reconoce usuario
     ↓ Carga datos existentes
     ↓ Devuelve FirebaseUser
-Dashboard con puntos guardados
+Dashboard con puntos guardados ✅
 ```
 
 ---
