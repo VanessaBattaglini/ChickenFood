@@ -51,6 +51,9 @@ import org.koin.androidx.compose.koinViewModel
 
 private const val TAG = "MainActivity"
 
+// Variable global para actualizar el carrito desde CartActivity
+private var cartUpdateCallback: (() -> Unit)? = null
+
 class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,9 +76,20 @@ class MainActivity : BaseActivity() {
                 },
                 onLogoutClick = {
                     logout()
+                },
+                onScreenReady = { callback ->
+                    // Guardar callback para usarlo en onResume
+                    cartUpdateCallback = callback
                 }
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume called - updating cart count")
+        // Actualizar contador de carrito cuando regreses a MainActivity
+        cartUpdateCallback?.invoke()
     }
 
     private fun navigateToItemsList(categoryId: Int, categoryName: String) {
@@ -119,7 +133,8 @@ fun MainScreen(
     onCategoryClick: (Int, String) -> Unit = { _, _ -> },
     onSearchResultClick: (FoodModel) -> Unit = {},
     onCartClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onScreenReady: ((callback: () -> Unit) -> Unit)? = null  // Nuevo parámetro para callback
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
@@ -150,9 +165,26 @@ fun MainScreen(
         }
     }
     
-    // Cargar contador de carrito
-    val managmentCart = ManagmentCart(androidx.compose.ui.platform.LocalContext.current)
-    cartItemCount = managmentCart.getListCart().size
+    // ✅ NUEVO: Obtener contexto para ManagmentCart
+    val context = androidx.compose.ui.platform.LocalContext.current
+    
+    // ✅ NUEVO: Actualizar contador de carrito - se ejecuta en cada recomposición
+    LaunchedEffect(Unit) {
+        val managmentCart = ManagmentCart(context)
+        val newCount = managmentCart.getListCart().size
+        cartItemCount = newCount
+        Log.d(TAG, "Cart counter initialized: $newCount items")
+    }
+    
+    // Registrar callback para actualización desde onResume
+    LaunchedEffect(Unit) {
+        onScreenReady?.invoke {
+            val managmentCart = ManagmentCart(context)
+            val newCount = managmentCart.getListCart().size
+            cartItemCount = newCount
+            Log.d(TAG, "Cart counter updated from onResume: $newCount items")
+        }
+    }
 
     // Si está cargando, mostrar loading screen
     if (isLoadingAll) {

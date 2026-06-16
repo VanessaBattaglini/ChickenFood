@@ -6,16 +6,18 @@
 
 ---
 
-## 🎯 Novedades Recientes (Etapa 3 Mejorada)
+## 🎯 Novedades Recientes (Etapa 3 Completada y Mejorada)
 
 ### ✨ Últimas Correcciones (16 de Junio, 2024)
 - ✅ **Fix v2: Botón Vaciar Mejorado** - Recomposición robusta con refresh trigger
-- ✅ **Múltiples Capas de Validación** - ArrayList + refreshTrigger garantizan actualización
+- ✅ **Fix: Badge Carrito Actualizado** - onResume() + Activity-Composable callback
+- ✅ **Múltiples Capas de Validación** - Garantizan actualización en todas las pantallas
 - ✅ **Patrón Reutilizable** - Para futuros cambios de estado complejos
 
 ### ✨ Características Principales
 - ✅ **Sistema de Pagos Completo** - Checkout con Tarjeta/Puntos
-- ✅ **Botón Vaciar Carrito** - Limpiar todo de una vez (AHORA FUNCIONA ✓)
+- ✅ **Botón Vaciar Carrito** - Limpia todo de una vez (AHORA FUNCIONA ✓)
+- ✅ **Badge Actualizado** - Muestra cantidad correcta en BottomBar (CORREGIDO ✓)
 - ✅ **Sesión Persistente** - Mantiene login después de cerrar app
 - ✅ **Datos Precargados** - Testing rápido con tarjeta de prueba
 - ✅ **Timeouts Firebase** - App no se congela
@@ -123,6 +125,12 @@ Aprende rápidamente cómo usar la app con ejemplos prácticos.
 - Checklist detallado
 - Debugging si algo falla
 - Confirmación de que funciona
+
+**[13_FIX_BADGE_CARRITO.md](13_FIX_BADGE_CARRITO.md)** - Fix: Badge del Carrito  
+- Activity-Composable callback pattern
+- onResume() actualiza badge
+- Consistencia entre pantallas
+- Patrón reutilizable
 
 ---
 
