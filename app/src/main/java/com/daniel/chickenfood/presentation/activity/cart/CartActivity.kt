@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -118,14 +119,18 @@ class CartActivity : BaseActivity() {
             )
         }
         
-        // Obtener puntos reales del usuario desde RewardsViewModel
+        // ✅ NUEVO: Obtener puntos reales del usuario - ESPERANDO a que el Flow se actualice
+        // No usar .value directamente, en su lugar usar collectAsState en Composable
+        // PERO aquí estamos en Activity, así que usamos el valor que se cargó via LaunchedEffect
         val userPoints = rewardsViewModel.pointsBalance.value
+        
+        Log.d(TAG, "Loaded userPoints: $userPoints")
         
         val intent = Intent(this, CheckoutActivity::class.java).apply {
             // Pasar datos usando Parcelable (seguro y eficiente)
             putParcelableArrayListExtra("cartItems", ArrayList(orderItems))
             putExtra("cartTotal", cartTotal)
-            putExtra("userPoints", userPoints) // ✅ Ahora obtiene puntos reales
+            putExtra("userPoints", userPoints) // ✅ Obtiene puntos reales (o 0 si aún no carga)
         }
         Log.d(TAG, "Starting CheckoutActivity with ${orderItems.size} items, userPoints=$userPoints")
         startActivity(intent)
@@ -146,7 +151,10 @@ fun CartScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var refreshTrigger by remember { mutableStateOf(0) }  // Trigger para forzar recomposición
     
-    Log.d(TAG, "CartScreen composing with ${cartItems.size} items, total: $totalPrice, refreshTrigger: $refreshTrigger")
+    // ✨ NUEVO: Observar puntos desde RewardsViewModel
+    val userPoints by rewardsViewModel.pointsBalance.collectAsState()
+    
+    Log.d(TAG, "CartScreen composing with ${cartItems.size} items, total: $totalPrice, refreshTrigger: $refreshTrigger, points: $userPoints")
 
     val changeListener = object : ChangeNumberItemsListener {
         override fun onChanged() {
@@ -269,6 +277,7 @@ fun CartScreen(
             CartFooter(
                 totalPrice = totalPrice,
                 itemCount = cartItems.size,
+                userPoints = userPoints,  // ✨ NUEVO
                 managmentCart = managmentCart,
                 onContinueShoppingClick = onContinueShoppingClick,
                 onCheckoutClick = onCheckoutClick
@@ -434,6 +443,7 @@ fun CartItemCard(
 fun CartFooter(
     totalPrice: Double,
     itemCount: Int,
+    userPoints: Int,  // ✨ NUEVO
     managmentCart: ManagmentCart,
     onContinueShoppingClick: () -> Unit = {},
     onCheckoutClick: () -> Unit = {}
@@ -472,6 +482,27 @@ fun CartFooter(
                 text = "$0.00",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
+            )
+        }
+        
+        // ✨ NUEVO: Mostrar puntos disponibles
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFFFF9E6), RoundedCornerShape(8.dp))
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "💎 Puntos disponibles:",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "$userPoints pts",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.orange)
             )
         }
 

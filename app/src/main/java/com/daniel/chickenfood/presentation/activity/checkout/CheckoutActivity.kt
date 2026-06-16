@@ -99,17 +99,30 @@ class CheckoutActivity : BaseActivity() {
                                 )
                                 orderViewModel.createOrder(order)
                                 
-                                // ✅ NUEVO: Registrar puntos en Firebase si el pago fue por tarjeta
-                                if (method == "card" && pointsChange > 0) {
-                                    Log.d(TAG, "Recording points transaction: +$pointsChange")
-                                    val pointsTransaction = PointsTransactionModel(
-                                        userId = currentUserId,
-                                        orderId = orderId,
-                                        points = pointsChange,
-                                        type = "purchase",
-                                        description = "Compra de $$cartTotal - ${cartItems.size} items",
-                                        timestamp = System.currentTimeMillis()
-                                    )
+                                // ✅ REGISTRAR TRANSACCIÓN DE PUNTOS para AMBOS métodos de pago
+                                if (pointsChange != 0) {
+                                    Log.d(TAG, "Recording points transaction: $pointsChange points (method=$method)")
+                                    val pointsTransaction = if (method == "card") {
+                                        // Pago con tarjeta: ganar puntos (+10% cashback)
+                                        PointsTransactionModel(
+                                            userId = currentUserId,
+                                            orderId = orderId,
+                                            points = pointsChange,
+                                            type = "purchase",
+                                            description = "Compra de $$cartTotal - ${cartItems.size} items (Tarjeta)",
+                                            timestamp = System.currentTimeMillis()
+                                        )
+                                    } else {
+                                        // Pago con puntos: gastar puntos (puntos serán negativos)
+                                        PointsTransactionModel(
+                                            userId = currentUserId,
+                                            orderId = orderId,
+                                            points = -pointsChange,  // Negativo porque se gastan
+                                            type = "purchase",
+                                            description = "Compra de $$cartTotal - ${cartItems.size} items (Puntos)",
+                                            timestamp = System.currentTimeMillis()
+                                        )
+                                    }
                                     rewardsViewModel.recordPointsTransaction(pointsTransaction)
                                 }
                             } else {
@@ -139,7 +152,19 @@ class CheckoutActivity : BaseActivity() {
                         },
                         onViewOrderClick = {
                             Log.d(TAG, "View order clicked")
-                            // TODO: Implementar navegación a detalle de orden
+                            // ✨ NUEVO: Navegar a OrderDetailActivity
+                            val intent = Intent(this@CheckoutActivity, OrderDetailActivity::class.java).apply {
+                                putParcelableArrayListExtra("cartItems", ArrayList(cartItems))
+                                putExtra("cartTotal", cartTotal)
+                                putExtra("paymentMethod", paymentMethod)
+                                putExtra("pointsBefore", userPoints)
+                                putExtra("pointsChange", pointsChange)
+                                putExtra("orderId", orderId)
+                                putExtra("orderTimestamp", System.currentTimeMillis())
+                                putExtra("discountUsed", 0.0)  // Para cuando implementemos descuento
+                                putExtra("pointsUsedForDiscount", 0)  // Para cuando implementemos descuento
+                            }
+                            startActivity(intent)
                         }
                     )
                 }

@@ -89,18 +89,62 @@ class RewardsRepositoryImpl(
     override fun addPointsTransaction(transaction: PointsTransactionModel): Flow<Boolean> = callbackFlow {
         try {
             val transactionId = transaction.transactionId.ifEmpty { UUID.randomUUID().toString() }
-            val ref = database.getReference("pointsTransactions/$transactionId")
             val newTransaction = transaction.copy(transactionId = transactionId)
             
-            ref.setValue(newTransaction).addOnCompleteListener { task ->
+            // ✅ PASO 1: Obtener rewards actuales
+            val rewardsRef = database.getReference("users/${transaction.userId}/rewards")
+            rewardsRef.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "Points transaction added: $transactionId")
-                    trySend(true).isSuccess
+                    val snapshot = task.result
+                    val json = gson.toJson(snapshot.value)
+                    val currentRewards = if (snapshot.exists()) {
+                        gson.fromJson(json, UserRewardsModel::class.java).copy(userId = transaction.userId)
+                    } else {
+                        UserRewardsModel(userId = transaction.userId)
+                    }
+                    
+                    // ✅ PASO 2: Calcular nuevos puntos
+                    val newPointsBalance = currentRewards.pointsBalance + transaction.points
+                    val newTotalPoints = currentRewards.totalPoints + if (transaction.points > 0) transaction.points else 0
+                    
+                    Log.d(TAG, "Points before: ${currentRewards.pointsBalance}, adding: ${transaction.points}, after: $newPointsBalance")
+                    
+                    // ✅ PASO 3: Actualizar UserRewardsModel
+                    val updatedRewards = currentRewards.copy(
+                        totalPoints = newTotalPoints,
+                        pointsBalance = newPointsBalance,
+                        pointsSpent = currentRewards.pointsSpent + if (transaction.points < 0) -transaction.points else 0,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                    
+                    // ✅ PASO 4: Guardar rewards actualizados
+                    rewardsRef.setValue(updatedRewards).addOnCompleteListener { updateTask ->
+                        if (updateTask.isSuccessful) {
+                            Log.d(TAG, "UserRewardsModel updated successfully")
+                            
+                            // ✅ PASO 5: Guardar la transacción en pointsTransactions
+                            val transRef = database.getReference("pointsTransactions/$transactionId")
+                            transRef.setValue(newTransaction).addOnCompleteListener { transTask ->
+                                if (transTask.isSuccessful) {
+                                    Log.d(TAG, "Points transaction added: $transactionId, new balance: $newPointsBalance")
+                                    trySend(true).isSuccess
+                                } else {
+                                    Log.e(TAG, "Failed to add transaction: ${transTask.exception?.message}")
+                                    trySend(false).isSuccess
+                                }
+                                close()
+                            }
+                        } else {
+                            Log.e(TAG, "Failed to update UserRewardsModel: ${updateTask.exception?.message}")
+                            trySend(false).isSuccess
+                            close()
+                        }
+                    }
                 } else {
-                    Log.e(TAG, "Failed to add transaction: ${task.exception?.message}")
+                    Log.e(TAG, "Failed to get rewards: ${task.exception?.message}")
                     trySend(false).isSuccess
+                    close()
                 }
-                close()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in addPointsTransaction: ${e.message}", e)

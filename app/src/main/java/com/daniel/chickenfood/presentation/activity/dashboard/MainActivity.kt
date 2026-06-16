@@ -51,8 +51,9 @@ import org.koin.androidx.compose.koinViewModel
 
 private const val TAG = "MainActivity"
 
-// Variable global para actualizar el carrito desde CartActivity
+// Variables globales para actualizar desde CheckoutActivity/CartActivity
 private var cartUpdateCallback: (() -> Unit)? = null
+private var rewardsUpdateCallback: (() -> Unit)? = null
 
 class MainActivity : BaseActivity() {
 
@@ -77,9 +78,10 @@ class MainActivity : BaseActivity() {
                 onLogoutClick = {
                     logout()
                 },
-                onScreenReady = { callback ->
-                    // Guardar callback para usarlo en onResume
-                    cartUpdateCallback = callback
+                onScreenReady = { cartCallback, rewardsCallback ->
+                    // Guardar callbacks para usarlos en onResume
+                    cartUpdateCallback = cartCallback
+                    rewardsUpdateCallback = rewardsCallback
                 }
             )
         }
@@ -87,9 +89,15 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume called - updating cart count")
+        Log.d(TAG, "onResume called - updating cart count and rewards")
         // Actualizar contador de carrito cuando regreses a MainActivity
         cartUpdateCallback?.invoke()
+        // ✅ NUEVO: Actualizar puntos cuando regreses de CheckoutActivity
+        // ✨ MEJORADO: Agregar pequeño delay para asegurar que Firebase actualizó
+        Thread {
+            Thread.sleep(500)  // Esperar 500ms a que Firebase responda
+            rewardsUpdateCallback?.invoke()
+        }.start()
     }
 
     private fun navigateToItemsList(categoryId: Int, categoryName: String) {
@@ -134,7 +142,7 @@ fun MainScreen(
     onSearchResultClick: (FoodModel) -> Unit = {},
     onCartClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    onScreenReady: ((callback: () -> Unit) -> Unit)? = null  // Nuevo parámetro para callback
+    onScreenReady: ((cartCallback: () -> Unit, rewardsCallback: () -> Unit) -> Unit)? = null  // Actualizado: 2 callbacks
 ) {
     val banners by viewModel.banners.collectAsState()
     val isLoadingBanners by viewModel.isLoadingBanners.collectAsState()
@@ -176,14 +184,24 @@ fun MainScreen(
         Log.d(TAG, "Cart counter initialized: $newCount items")
     }
     
-    // Registrar callback para actualización desde onResume
+    // Registrar callbacks para actualización desde onResume
     LaunchedEffect(Unit) {
-        onScreenReady?.invoke {
-            val managmentCart = ManagmentCart(context)
-            val newCount = managmentCart.getListCart().size
-            cartItemCount = newCount
-            Log.d(TAG, "Cart counter updated from onResume: $newCount items")
-        }
+        onScreenReady?.invoke(
+            {
+                // Callback para actualizar carrito
+                val managmentCart = ManagmentCart(context)
+                val newCount = managmentCart.getListCart().size
+                cartItemCount = newCount
+                Log.d(TAG, "Cart counter updated from onResume: $newCount items")
+            },
+            {
+                // Callback para actualizar rewards
+                if (currentUser != null) {
+                    Log.d(TAG, "Reloading rewards for user: $currentUser from onResume")
+                    rewardsViewModel.loadUserRewards(currentUser.userId)
+                }
+            }
+        )
     }
 
     // Si está cargando, mostrar loading screen
