@@ -129,6 +129,31 @@ class RewardsViewModel(
     }
 
     /**
+     * Registra una transacción de puntos
+     */
+    fun recordPointsTransaction(transaction: PointsTransactionModel) {
+        Log.d(TAG, "Recording points transaction: ${transaction.points} points for user: ${transaction.userId}")
+        viewModelScope.launch {
+            try {
+                rewardsRepository.addPointsTransaction(transaction).collect { success ->
+                    if (success) {
+                        Log.d(TAG, "Points transaction recorded successfully")
+                        // Recargar recompensas del usuario
+                        loadUserRewards(transaction.userId)
+                        _error.value = null
+                    } else {
+                        Log.w(TAG, "Failed to record points transaction")
+                        _error.value = "No se pudo registrar la transacción de puntos"
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error recording points transaction: ${e.message}", e)
+                _error.value = e.message
+            }
+        }
+    }
+
+    /**
      * Limpia el error
      */
     fun clearError() {
