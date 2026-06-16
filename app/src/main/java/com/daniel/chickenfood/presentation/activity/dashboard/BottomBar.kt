@@ -2,6 +2,7 @@ package com.daniel.chickenfood.presentation.activity.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
@@ -30,7 +31,8 @@ fun BottomBar(
 
     NavigationBar(
         containerColor = colorResource(R.color.darkGray),
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        modifier = Modifier.height(80.dp)  // ✅ Aumentar altura para más accesibilidad
     ) {
         bottomMenuItems.forEach { item ->
             NavigationBarItem(
@@ -39,11 +41,22 @@ fun BottomBar(
                     onItemSelected(item.label)
                 },
                 icon = {
-                    Box {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)  // ✅ Aumentar tamaño del contenedor
+                            .background(
+                                color = if (selectedItem == item.label) 
+                                    colorResource(R.color.orange).copy(alpha = 0.1f)
+                                else 
+                                    Color.Transparent,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
                         Icon(
                             painter = painterResource(item.icon),
                             contentDescription = item.label,
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(28.dp),  // ✅ Icono más grande
                             tint =
                                 if (selectedItem == item.label)
                                     colorResource(R.color.orange)
