@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.daniel.chickenfood.domain.model.OrderItemModel
+import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
 
@@ -17,41 +18,32 @@ private const val TAG = "CheckoutActivity"
 
 class CheckoutActivity : BaseActivity() {
 
+    private lateinit var managmentCart: ManagmentCart
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        managmentCart = ManagmentCart(applicationContext)
 
-        // Obtener datos del carrito desde el Intent
-        val itemCount = intent.getIntExtra("itemCount", 0)
+        // Obtener datos del carrito desde el Intent usando Parcelable (seguro)
+        @Suppress("DEPRECATION")
+        val cartItems = intent.getParcelableArrayListExtra<OrderItemModel>("cartItems") ?: mutableListOf()
         val cartTotal = intent.getDoubleExtra("cartTotal", 0.0)
         val userPoints = intent.getIntExtra("userPoints", 0)
 
-        Log.d(TAG, "CheckoutActivity opened with $itemCount items, total=$cartTotal, points=$userPoints")
+        Log.d(TAG, "CheckoutActivity opened with ${cartItems.size} items, total=$cartTotal, points=$userPoints")
 
-        // Reconstruir cartItems desde los strings
-        val cartItems = mutableListOf<OrderItemModel>()
-        for (i in 0 until itemCount) {
-            val itemString = intent.getStringExtra("item_$i")
-            if (itemString != null) {
-                val parts = itemString.split("|")
-                if (parts.size == 5) {
-                    try {
-                        val item = OrderItemModel(
-                            title = parts[0],
-                            price = parts[1].toDouble(),
-                            quantity = parts[2].toInt(),
-                            subtotal = parts[3].toDouble(),
-                            foodId = parts[4].toInt()
-                        )
-                        cartItems.add(item)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing item $i: ${e.message}")
-                    }
-                }
-            }
+        if (cartItems.isEmpty()) {
+            Log.w(TAG, "No items in cart, finishing activity")
+            android.widget.Toast.makeText(
+                this,
+                "El carrito está vacío",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            finish()
+            return
         }
-
-        Log.d(TAG, "Reconstructed ${cartItems.size} items from Intent")
 
         setContent {
             var currentScreen by remember { mutableStateOf("checkout") }
@@ -96,7 +88,8 @@ class CheckoutActivity : BaseActivity() {
                         pointsChange = pointsChange,
                         pointsAfter = pointsAfter,
                         onBackClick = {
-                            Log.d(TAG, "Navigating back to MainActivity")
+                            Log.d(TAG, "Navigating back to MainActivity and clearing cart")
+                            managmentCart.clearCart()
                             val intent = Intent(this@CheckoutActivity, MainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                             startActivity(intent)

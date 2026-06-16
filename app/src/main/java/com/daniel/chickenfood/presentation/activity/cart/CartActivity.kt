@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,12 +48,16 @@ import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.checkout.CheckoutActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
+import com.daniel.chickenfood.presentation.viewModel.RewardsViewModel
+import com.daniel.chickenfood.helper.AuthHelper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "CartActivity"
 
 class CartActivity : BaseActivity() {
 
     private lateinit var managmentCart: ManagmentCart
+    private val rewardsViewModel: RewardsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +70,18 @@ class CartActivity : BaseActivity() {
         for (item in cartItems) {
             Log.d(TAG, "  - ${item.title} x${item.numberInCart} = $${item.price * item.numberInCart}")
         }
+        
+        // Cargar puntos del usuario actual
+        val currentUserId = AuthHelper.getUserId()
+        if (!currentUserId.isNullOrEmpty()) {
+            Log.d(TAG, "Loading rewards for user: $currentUserId")
+            rewardsViewModel.loadUserRewards(currentUserId)
+        }
 
         setContent {
             CartScreen(
                 managmentCart = managmentCart,
+                rewardsViewModel = rewardsViewModel,
                 onBackClick = { finish() },
                 onHomeClick = { navigateToHome() },
                 onContinueShoppingClick = { navigateToHome() },
@@ -105,17 +118,16 @@ class CartActivity : BaseActivity() {
             )
         }
         
+        // Obtener puntos reales del usuario desde RewardsViewModel
+        val userPoints = rewardsViewModel.pointsBalance.value
+        
         val intent = Intent(this, CheckoutActivity::class.java).apply {
-            // Pasar datos como Parceable o reconvertir en CheckoutActivity
-            putExtra("itemCount", orderItems.size)
+            // Pasar datos usando Parcelable (seguro y eficiente)
+            putParcelableArrayListExtra("cartItems", ArrayList(orderItems))
             putExtra("cartTotal", cartTotal)
-            putExtra("userPoints", 500) // TODO: Obtener del RewardsViewModel
-            
-            // Pasar cada item como strings serializados
-            orderItems.forEachIndexed { index, item ->
-                putExtra("item_$index", "${item.title}|${item.price}|${item.quantity}|${item.subtotal}|${item.foodId}")
-            }
+            putExtra("userPoints", userPoints) // ✅ Ahora obtiene puntos reales
         }
+        Log.d(TAG, "Starting CheckoutActivity with ${orderItems.size} items, userPoints=$userPoints")
         startActivity(intent)
     }
 }
@@ -123,21 +135,25 @@ class CartActivity : BaseActivity() {
 @Composable
 fun CartScreen(
     managmentCart: ManagmentCart,
+    rewardsViewModel: RewardsViewModel,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit = {},
     onContinueShoppingClick: () -> Unit = {},
     onCheckoutClick: () -> Unit = {}
 ) {
-    var cartItems by remember { mutableStateOf(managmentCart.getListCart()) }
+    var cartItems by remember { mutableStateOf(ArrayList(managmentCart.getListCart())) }
     var totalPrice by remember { mutableStateOf(managmentCart.getTotalFee()) }
+    var showClearDialog by remember { mutableStateOf(false) }
+    var refreshTrigger by remember { mutableStateOf(0) }  // Trigger para forzar recomposición
     
-    Log.d(TAG, "CartScreen composing with ${cartItems.size} items, total: $totalPrice")
+    Log.d(TAG, "CartScreen composing with ${cartItems.size} items, total: $totalPrice, refreshTrigger: $refreshTrigger")
 
     val changeListener = object : ChangeNumberItemsListener {
         override fun onChanged() {
             Log.d(TAG, "changeListener.onChanged() called")
-            cartItems = managmentCart.getListCart()
+            cartItems = ArrayList(managmentCart.getListCart())
             totalPrice = managmentCart.getTotalFee()
+            refreshTrigger++  // Incrementar para forzar recomposición
             Log.d(TAG, "Updated cart: ${cartItems.size} items, total: $totalPrice")
         }
     }
@@ -147,31 +163,54 @@ fun CartScreen(
             .fillMaxSize()
             .background(colorResource(R.color.darkBrown))
     ) {
-        // Header
+        // Header with Clear Button
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = {
-                Log.d(TAG, "Home button clicked in CartScreen")
-                onHomeClick()
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.back_grey),
-                    contentDescription = "Home",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    Log.d(TAG, "Home button clicked in CartScreen")
+                    onHomeClick()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.back_grey),
+                        contentDescription = "Home",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Text(
+                    text = "Mi Carrito",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            Text(
-                text = "Mi Carrito",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(start = 16.dp)
-            )
+
+            // Clear Cart Button
+            if (cartItems.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        Log.d(TAG, "Clear cart button clicked")
+                        showClearDialog = true
+                    },
+                    modifier = Modifier.size(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF6B6B)
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("🗑️", fontSize = 20.sp)
+                }
+            }
         }
 
         if (cartItems.isEmpty()) {
@@ -235,6 +274,69 @@ fun CartScreen(
                 onCheckoutClick = onCheckoutClick
             )
         }
+    }
+
+    // Clear Cart Dialog
+    if (showClearDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showClearDialog = false },
+            title = {
+                Text(
+                    text = "Vaciar Carrito",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "¿Estás seguro que deseas eliminar todos los artículos del carrito? Esta acción no se puede deshacer.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        Log.d(TAG, "Confirmed clearing cart - calling clearCart()")
+                        managmentCart.clearCart()
+                        Log.d(TAG, "Cart cleared, reloading items...")
+                        
+                        // Force recomposition by creating a new list AND updating refreshTrigger
+                        cartItems = ArrayList(managmentCart.getListCart())
+                        totalPrice = managmentCart.getTotalFee()
+                        refreshTrigger++  // Forzar recomposición incrementando contador
+                        
+                        Log.d(TAG, "Cart now has ${cartItems.size} items, total: $totalPrice, refreshTrigger: $refreshTrigger")
+                        showClearDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF6B6B)
+                    )
+                ) {
+                    Text(
+                        text = "Sí, Vaciar",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        Log.d(TAG, "Cancelled clearing cart")
+                        showClearDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Gray
+                    )
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        )
     }
 }
 

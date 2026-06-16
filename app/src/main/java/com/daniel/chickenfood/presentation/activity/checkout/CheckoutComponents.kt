@@ -89,7 +89,7 @@ fun CartSummaryCard(
             }
 
             // Línea divisora
-            androidx.compose.material3.Divider(
+            androidx.compose.material3.HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 color = Color.LightGray
             )
@@ -196,6 +196,13 @@ fun PointsInfoCard(
 
 /**
  * Input field personalizado para checkout
+ * 
+ * Para testing, usa estas tarjetas:
+ * - Visa: 4532 1234 5678 9010 (12/25, CVC: 123)
+ * - Mastercard: 5425 2334 3010 9903 (06/24, CVC: 456)
+ * - Visa: 4111 1111 1111 1111 (03/26, CVC: 789)
+ * 
+ * Todos los números son solo para testing local.
  */
 @Composable
 fun CheckoutInputField(
@@ -393,7 +400,7 @@ fun PointsSummaryCard(
             }
 
             // Línea divisora
-            androidx.compose.material3.Divider(
+            androidx.compose.material3.HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = Color.LightGray
             )
@@ -478,7 +485,7 @@ fun OrderSummaryCard(
             }
 
             // Línea divisora
-            androidx.compose.material3.Divider(
+            androidx.compose.material3.HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 color = Color.LightGray
             )

@@ -2,7 +2,6 @@ package com.daniel.chickenfood.data.repository
 
 import android.util.Log
 import com.daniel.chickenfood.domain.model.PointsTransactionModel
-import com.daniel.chickenfood.domain.model.TransactionModel
 import com.daniel.chickenfood.domain.model.UserRewardsModel
 import com.daniel.chickenfood.domain.reposity.RewardsRepository
 import com.google.firebase.database.DataSnapshot
@@ -13,10 +12,13 @@ import com.google.gson.Gson
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.timeout
 import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "RewardsRepositoryImpl"
 private const val POINTS_PERCENTAGE = 0.10  // 10% cashback
+private const val FIREBASE_TIMEOUT_SECONDS = 10L
 
 class RewardsRepositoryImpl(
     private val database: FirebaseDatabase,
@@ -24,10 +26,14 @@ class RewardsRepositoryImpl(
 ) : RewardsRepository {
 
     override fun getUserRewards(userId: String): Flow<UserRewardsModel> = callbackFlow {
+        Log.d(TAG, "getUserRewards called for user: $userId")
         val ref = database.getReference("users/$userId/rewards")
+        var dataReceived = false
+        
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
+                    dataReceived = true
                     Log.d(TAG, "getUserRewards snapshot received for user: $userId")
                     val rewards = if (snapshot.exists()) {
                         val json = gson.toJson(snapshot.value)
@@ -47,12 +53,17 @@ class RewardsRepositoryImpl(
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "getUserRewards cancelled: ${error.message}")
-                close(error.toException())
+                close(Exception("Firebase error: ${error.message}"))
             }
         }
+        
         ref.addValueEventListener(listener)
-        awaitClose { ref.removeEventListener(listener) }
-    }
+        
+        awaitClose { 
+            ref.removeEventListener(listener)
+            Log.d(TAG, "getUserRewards listener removed for user: $userId")
+        }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun updateUserRewards(rewards: UserRewardsModel): Flow<Boolean> = callbackFlow {
         try {
@@ -73,7 +84,7 @@ class RewardsRepositoryImpl(
             trySend(false).isSuccess
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun addPointsTransaction(transaction: PointsTransactionModel): Flow<Boolean> = callbackFlow {
         try {
@@ -96,10 +107,12 @@ class RewardsRepositoryImpl(
             trySend(false).isSuccess
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun getPointsHistory(userId: String): Flow<List<PointsTransactionModel>> = callbackFlow {
+        Log.d(TAG, "getPointsHistory called for user: $userId")
         val ref = database.getReference("pointsTransactions").orderByChild("userId").equalTo(userId)
+        
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
@@ -119,12 +132,15 @@ class RewardsRepositoryImpl(
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "getPointsHistory cancelled: ${error.message}")
-                close(error.toException())
+                close(Exception("Firebase error: ${error.message}"))
             }
         }
         ref.addValueEventListener(listener)
-        awaitClose { ref.removeEventListener(listener) }
-    }
+        awaitClose { 
+            ref.removeEventListener(listener)
+            Log.d(TAG, "getPointsHistory listener removed for user: $userId")
+        }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun redeemPoints(userId: String, points: Int, description: String): Flow<Boolean> = callbackFlow {
         try {
@@ -192,7 +208,7 @@ class RewardsRepositoryImpl(
             trySend(false).isSuccess
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun addPointsFromPurchase(userId: String, orderTotal: Double, orderId: String): Flow<Boolean> = callbackFlow {
         try {
@@ -263,7 +279,7 @@ class RewardsRepositoryImpl(
             trySend(false).isSuccess
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun getPointsBalance(userId: String): Flow<Int> = callbackFlow {
         val ref = database.getReference("users/$userId/rewards/pointsBalance")
@@ -281,12 +297,15 @@ class RewardsRepositoryImpl(
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "getPointsBalance cancelled: ${error.message}")
-                close(error.toException())
+                close(Exception("Firebase error: ${error.message}"))
             }
         }
         ref.addValueEventListener(listener)
-        awaitClose { ref.removeEventListener(listener) }
-    }
+        awaitClose { 
+            ref.removeEventListener(listener)
+            Log.d(TAG, "getPointsBalance listener removed")
+        }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun addPoints(userId: String, points: Int, reason: String): Flow<Int> = callbackFlow {
         try {
@@ -331,7 +350,7 @@ class RewardsRepositoryImpl(
             Log.e(TAG, "Error in addPoints: ${e.message}", e)
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun deductPoints(userId: String, points: Int, reason: String): Flow<Int> = callbackFlow {
         try {
@@ -383,7 +402,7 @@ class RewardsRepositoryImpl(
             Log.e(TAG, "Error in deductPoints: ${e.message}", e)
             close(e)
         }
-    }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 
     override fun getCurrentPoints(userId: String): Flow<Int> = callbackFlow {
         val ref = database.getReference("users/$userId/rewards/pointsBalance")
@@ -401,10 +420,15 @@ class RewardsRepositoryImpl(
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "getCurrentPoints cancelled: ${error.message}")
-                close(error.toException())
+                close(Exception("Firebase error: ${error.message}"))
             }
         }
         ref.addValueEventListener(listener)
-        awaitClose { ref.removeEventListener(listener) }
-    }
+        awaitClose { 
+            ref.removeEventListener(listener)
+            Log.d(TAG, "getCurrentPoints listener removed")
+        }
+    }.timeout(FIREBASE_TIMEOUT_SECONDS.seconds)
 }
+
+

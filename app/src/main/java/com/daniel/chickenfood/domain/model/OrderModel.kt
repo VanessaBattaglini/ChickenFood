@@ -1,5 +1,7 @@
 package com.daniel.chickenfood.domain.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -52,4 +54,29 @@ data class OrderItemModel(
     
     @SerializedName("imagePath")
     val imagePath: String = ""
-)
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        foodId = parcel.readInt(),
+        title = parcel.readString() ?: "",
+        price = parcel.readDouble(),
+        quantity = parcel.readInt(),
+        subtotal = parcel.readDouble(),
+        imagePath = parcel.readString() ?: ""
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(foodId)
+        parcel.writeString(title)
+        parcel.writeDouble(price)
+        parcel.writeInt(quantity)
+        parcel.writeDouble(subtotal)
+        parcel.writeString(imagePath)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object CREATOR : Parcelable.Creator<OrderItemModel> {
+        override fun createFromParcel(parcel: Parcel) = OrderItemModel(parcel)
+        override fun newArray(size: Int) = arrayOfNulls<OrderItemModel>(size)
+    }
+}

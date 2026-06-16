@@ -51,10 +51,10 @@ fun CheckoutScreen(
     Log.d(TAG, "CheckoutScreen rendering - items=${cartItems.size}, total=$cartTotal, points=$userPoints")
 
     var selectedPaymentMethod by remember { mutableStateOf("card") }
-    var cardNumber by remember { mutableStateOf("") }
-    var cardHolder by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
-    var cvc by remember { mutableStateOf("") }
+    var cardNumber by remember { mutableStateOf("4532123456789010") }  // ← Precargar
+    var cardHolder by remember { mutableStateOf("JOHN DOE") }  // ← Precargar
+    var expiryDate by remember { mutableStateOf("12/25") }  // ← Precargar
+    var cvc by remember { mutableStateOf("123") }  // ← Precargar
     var pointsToUse by remember { mutableStateOf(calculatePointsNeeded(cartTotal)) }
     var errorMessage by remember { mutableStateOf(error) }
 
@@ -315,7 +315,7 @@ private fun CardFormSection(
             value = cardNumber,
             onValueChange = onCardNumberChange,
             label = "Número de Tarjeta",
-            placeholder = "1234 5678 9012 3456",
+            placeholder = "4532 1234 5678 9010",
             isValid = isValidCardNumber(cardNumber),
             errorMessage = "Debe tener 16 dígitos",
             keyboardType = KeyboardType.Number,
@@ -327,7 +327,7 @@ private fun CardFormSection(
             value = cardHolder,
             onValueChange = onCardHolderChange,
             label = "Nombre del Titular",
-            placeholder = "John Doe",
+            placeholder = "JOHN DOE",
             isValid = isValidCardHolder(cardHolder),
             errorMessage = "Mínimo 2 caracteres"
         )
@@ -341,7 +341,7 @@ private fun CardFormSection(
                 value = expiryDate,
                 onValueChange = onExpiryDateChange,
                 label = "Vencimiento",
-                placeholder = "MM/YY",
+                placeholder = "12/25",
                 isValid = isValidExpiryDate(expiryDate),
                 errorMessage = "Formato MM/YY",
                 keyboardType = KeyboardType.Number,
