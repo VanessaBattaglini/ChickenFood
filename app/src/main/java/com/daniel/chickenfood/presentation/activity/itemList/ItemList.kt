@@ -1,6 +1,7 @@
 package com.daniel.chickenfood.presentation.activity.itemList
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -28,30 +30,40 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.FoodModel
+import com.daniel.chickenfood.presentation.activity.dashboard.scrollIndicatorModifier
 
 @Composable
 fun ItemsList(
     items: List<FoodModel>,
     onFoodClick: (FoodModel) -> Unit
 ) {
+    val itemsLazyListState = rememberLazyListState()
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scrollIndicatorModifier(itemsLazyListState)
     ) {
+        LazyColumn(
+            state = itemsLazyListState,
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
 
-        itemsIndexed(
-            items = items,
-            key = { _, food -> food.id }
-        ) { index, food ->
+            itemsIndexed(
+                items = items,
+                key = { _, food -> food.id }
+            ) { index, food ->
 
-            FoodCard(
-                food = food,
-                isImageLeft = index % 2 == 0,
-                onClick = {
-                    onFoodClick(food)
-                }
-            )
+                FoodCard(
+                    food = food,
+                    isImageLeft = index % 2 == 0,
+                    onClick = {
+                        onFoodClick(food)
+                    }
+                )
+            }
         }
     }
 }
