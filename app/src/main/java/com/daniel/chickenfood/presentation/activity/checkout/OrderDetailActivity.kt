@@ -135,7 +135,7 @@ fun OrderDetailScreen(
             )
             IconButton(onClick = onShareClick) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(R.drawable.search),
                     contentDescription = "Share",
                     tint = colorResource(R.color.orange),
                     modifier = Modifier.size(24.dp)

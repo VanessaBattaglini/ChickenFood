@@ -239,7 +239,7 @@ fun CheckoutInputField(
                 if (value.isNotEmpty()) {
                     Text(
                         text = if (isValid) "✓" else "✗",
-                        color = if (isValid) Color.Green else Color.Red,
+                        color = if (isValid) Color.Cyan else Color.Red,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(end = 8.dp)
@@ -392,10 +392,10 @@ fun PointsSummaryCard(
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "${if (isDeduction) "-" else "+"}$pointsChange pts",
+                    text = "${if (isDeduction) "-" else "+"}${kotlin.math.abs(pointsChange)} pts",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = if (isDeduction) Color.Red else Color.Green
+                    color = if (isDeduction) Color.Red else Color.Cyan
                 )
             }
 
@@ -510,7 +510,11 @@ fun OrderSummaryCard(
 
             // Método de pago
             Text(
-                text = "Pagado con: ${if (paymentMethod == "card") "Tarjeta" else "Puntos"}",
+                text = "Pagado con: ${when(paymentMethod) {
+                    "card" -> "Tarjeta"
+                    "mixed" -> "Puntos + Tarjeta"
+                    else -> "Puntos"
+                }}",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 8.dp)
@@ -522,6 +526,97 @@ fun OrderSummaryCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+        }
+    }
+}
+
+/**
+ * Tarjeta que muestra el desglose de pago mixto (Puntos + Tarjeta)
+ */
+@Composable
+fun MixedPaymentSummaryCard(
+    cartTotal: Double,
+    pointsUsed: Int,
+    cardAmount: Double
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFF3E0)  // Fondo naranja claro
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "💳 Desglose de Pago Mixto",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray
+            )
+
+            // Total original
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Total de compra:",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "$${"%.2f".format(cartTotal)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Descuento por puntos
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Descuento (puntos):",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "-$${"%.2f".format(pointsUsed * 0.01)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Cyan
+                )
+            }
+
+            // Línea divisora
+            androidx.compose.material3.HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = Color.LightGray
+            )
+
+            // Monto a pagar con tarjeta
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "A pagar con tarjeta:",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "$${"%.2f".format(cardAmount)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.orange)
+                )
+            }
         }
     }
 }

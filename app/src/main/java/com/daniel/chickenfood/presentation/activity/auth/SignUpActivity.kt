@@ -168,8 +168,34 @@ class SignUpActivity : BaseActivity() {
 
     private fun navigateToDashboard() {
         Log.d(TAG, "Navegando al Dashboard")
+        
+        // ✅ NUEVO: Crear rewards iniciales con puntos de bienvenida
+        val userId = firebaseAuth.currentUser?.uid
+        if (!userId.isNullOrEmpty()) {
+            Log.d(TAG, "Creating welcome rewards for user: $userId")
+            val db = com.google.firebase.database.FirebaseDatabase.getInstance()
+            val rewardsRef = db.getReference("users/$userId/rewards")
+            
+            val welcomeRewards = mapOf(
+                "userId" to userId,
+                "pointsBalance" to 500,  // 500 puntos de bienvenida
+                "totalPoints" to 500,
+                "pointsSpent" to 0,
+                "createdAt" to System.currentTimeMillis(),
+                "lastUpdated" to System.currentTimeMillis(),
+                "isPremium" to false
+            )
+            
+            rewardsRef.setValue(welcomeRewards).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Welcome rewards created successfully")
+                } else {
+                    Log.e(TAG, "Failed to create welcome rewards: ${task.exception?.message}")
+                }
+            }
+        }
+        
         val intent = Intent(this, MainActivity::class.java)
-
         startActivity(intent)
         finish()
     }

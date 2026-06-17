@@ -28,25 +28,57 @@ class RewardsRepositoryImpl(
     override fun getUserRewards(userId: String): Flow<UserRewardsModel> = callbackFlow {
         Log.d(TAG, "getUserRewards called for user: $userId")
         val ref = database.getReference("users/$userId/rewards")
-        var dataReceived = false
         
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    dataReceived = true
-                    Log.d(TAG, "getUserRewards snapshot received for user: $userId")
-                    val rewards = if (snapshot.exists()) {
-                        val json = gson.toJson(snapshot.value)
-                        Log.d(TAG, "Rewards JSON: $json")
-                        val parsed = gson.fromJson(json, UserRewardsModel::class.java)
-                        parsed.copy(userId = userId)
-                    } else {
-                        Log.d(TAG, "No rewards found, creating default")
-                        UserRewardsModel(userId = userId)
+                    Log.d(TAG, "Snapshot received. Exists: ${snapshot.exists()}")
+                    Log.d(TAG, "Snapshot raw value: ${snapshot.value}")
+                    Log.d(TAG, "Snapshot children count: ${snapshot.childrenCount}")
+                    
+                    // Iterar sobre todos los hijos para debug
+                    snapshot.children.forEach { child ->
+                        Log.d(TAG, "Child key: ${child.key}, value: ${child.value}")
                     }
+                    
+                    var rewards: UserRewardsModel? = null
+                    
+                    if (snapshot.exists()) {
+                        // Intento 1: Usar Gson
+                        try {
+                            val json = gson.toJson(snapshot.value)
+                            Log.d(TAG, "JSON: $json")
+                            rewards = gson.fromJson(json, UserRewardsModel::class.java)
+                            Log.d(TAG, "Parsed via Gson: $rewards")
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Gson parsing failed, trying manual mapping: ${e.message}")
+                        }
+                        
+                        // Intento 2: Mapeo manual
+                        if (rewards == null) {
+                            val pointsBalance = snapshot.child("pointsBalance").getValue(Int::class.java) ?: 0
+                            val totalPoints = snapshot.child("totalPoints").getValue(Int::class.java) ?: pointsBalance
+                            val pointsSpent = snapshot.child("pointsSpent").getValue(Int::class.java) ?: 0
+                            
+                            Log.d(TAG, "Manual mapping - pointsBalance: $pointsBalance, totalPoints: $totalPoints")
+                            
+                            rewards = UserRewardsModel(
+                                userId = userId,
+                                pointsBalance = pointsBalance,
+                                totalPoints = totalPoints,
+                                pointsSpent = pointsSpent
+                            )
+                        }
+                    } else {
+                        Log.d(TAG, "No data at users/$userId/rewards, creating default with 0 points")
+                        rewards = UserRewardsModel(userId = userId, pointsBalance = 0)
+                    }
+                    
+                    Log.d(TAG, "Final rewards being sent: userId=${rewards.userId}, pointsBalance=${rewards.pointsBalance}")
                     trySend(rewards).isSuccess
                 } catch (e: Exception) {
                     Log.e(TAG, "Error in getUserRewards: ${e.message}", e)
+                    e.printStackTrace()
                     close(e)
                 }
             }

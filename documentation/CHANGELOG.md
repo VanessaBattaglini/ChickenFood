@@ -1,5 +1,47 @@
 # CHANGELOG - Historial de Cambios
 
+## [3.5] - 17 de Junio, 2024 - FIX: PUNTOS SE CARGAN CORRECTAMENTE EN CHECKOUT
+
+### 🐛 Bug Arreglado
+- ✅ **Los puntos siempre llegaban como 0 al abrir Checkout**
+- ✅ **Causa**: CartActivity obtenía `.value` del StateFlow antes de que cargara desde Firebase
+- ✅ **Solución**: CheckoutActivity ahora carga puntos directamente con `collectAsState()`
+
+### 🔧 Arquitectura Mejorada
+
+**Antes (❌ No funcionaba):**
+```
+CartActivity
+  ↓ obtiene puntos.value (0)
+  ↓ pasa al Intent
+CheckoutActivity (recibe 0)
+```
+
+**Después (✅ Funciona):**
+```
+CheckoutActivity
+  ↓ loadUserRewards()
+  ↓ collectAsState() observa puntos en tiempo real
+  ↓ CheckoutScreen recibe puntos correctos
+```
+
+### 📝 Cambios en Código
+
+| Archivo | Cambio |
+|---------|--------|
+| CartActivity | ❌ Removido: `putExtra("userPoints", ...)` |
+| CheckoutActivity | ✅ Agregado: `val userPoints by rewardsViewModel.pointsBalance.collectAsState()` |
+
+### ✅ Funcionalidad Verificada
+
+- [x] Dialog pregunta sobre uso de puntos cuando hay > 0 pts
+- [x] Número de puntos es correcto (no 0)
+- [x] Usuario puede seleccionar pago con puntos
+- [x] Cálculo de descuento: 100 pts = $1.00
+- [x] Pago mixto funciona correctamente
+
+---
+
 ## [3.2] - 16 de Junio, 2024 - FIX: BADGE DEL CARRITO SE ACTUALIZA
 
 ### 🐛 Bug Arreglado

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -49,6 +50,7 @@ import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.checkout.CheckoutActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
+import com.daniel.chickenfood.presentation.activity.dashboard.scrollIndicatorModifier
 import com.daniel.chickenfood.presentation.viewModel.RewardsViewModel
 import com.daniel.chickenfood.helper.AuthHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -119,20 +121,15 @@ class CartActivity : BaseActivity() {
             )
         }
         
-        // ✅ NUEVO: Obtener puntos reales del usuario - ESPERANDO a que el Flow se actualice
-        // No usar .value directamente, en su lugar usar collectAsState en Composable
-        // PERO aquí estamos en Activity, así que usamos el valor que se cargó via LaunchedEffect
-        val userPoints = rewardsViewModel.pointsBalance.value
-        
-        Log.d(TAG, "Loaded userPoints: $userPoints")
-        
+        // ✅ ACTUALIZADO: No pasar userPoints por Intent
+        // CheckoutActivity cargará los puntos directamente desde RewardsViewModel
         val intent = Intent(this, CheckoutActivity::class.java).apply {
             // Pasar datos usando Parcelable (seguro y eficiente)
             putParcelableArrayListExtra("cartItems", ArrayList(orderItems))
             putExtra("cartTotal", cartTotal)
-            putExtra("userPoints", userPoints) // ✅ Obtiene puntos reales (o 0 si aún no carga)
+            // ❌ REMOVIDO: putExtra("userPoints", userPoints)
         }
-        Log.d(TAG, "Starting CheckoutActivity with ${orderItems.size} items, userPoints=$userPoints")
+        Log.d(TAG, "Starting CheckoutActivity with ${orderItems.size} items")
         startActivity(intent)
     }
 }
@@ -256,20 +253,30 @@ fun CartScreen(
             }
         } else {
             // Cart Items
-            LazyColumn(
+            val lazyListState = rememberLazyListState()
+            
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .scrollIndicatorModifier(lazyListState)
             ) {
-                itemsIndexed(cartItems) { index, item ->
-                    CartItemCard(
-                        item = item,
-                        index = index,
-                        managmentCart = managmentCart,
-                        changeListener = changeListener
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    itemsIndexed(cartItems) { index, item ->
+                        CartItemCard(
+                            item = item,
+                            index = index,
+                            managmentCart = managmentCart,
+                            changeListener = changeListener
+                        )
+                    }
                 }
             }
 

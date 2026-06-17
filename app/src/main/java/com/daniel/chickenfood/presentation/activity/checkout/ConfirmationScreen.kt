@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.OrderItemModel
+import com.daniel.chickenfood.presentation.activity.dashboard.scrollIndicatorModifier
 
 private const val TAG = "ConfirmationScreen"
 
@@ -111,13 +113,22 @@ fun ConfirmationScreen(
         )
 
         // Contenido scrolleable
-        LazyColumn(
+        val confirmationLazyListState = rememberLazyListState()
+        
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 8.dp)
+                .scrollIndicatorModifier(confirmationLazyListState)
         ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                state = confirmationLazyListState,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             // Resumen de compra
             item {
                 OrderSummaryCard(
@@ -140,8 +151,24 @@ fun ConfirmationScreen(
                 }
             }
 
-            // Información de puntos (si se pagó con puntos)
-            if (paymentMethod == "points") {
+            // Información de pago mixto (Puntos + Tarjeta)
+            if (paymentMethod == "mixed") {
+                item {
+                    val POINTS_CONVERSION_RATE = 1.0  // 1 punto = 1 peso chileno
+                    val pointsUsed = kotlin.math.abs(pointsChange)
+                    val discountAmount = pointsUsed / POINTS_CONVERSION_RATE
+                    val cardAmount = (cartTotal - discountAmount).coerceAtLeast(0.0)
+                    
+                    MixedPaymentSummaryCard(
+                        cartTotal = cartTotal,
+                        pointsUsed = pointsUsed,
+                        cardAmount = cardAmount
+                    )
+                }
+            }
+
+            // Información de puntos (si se pagó con puntos o pago mixto)
+            if (paymentMethod == "points" || paymentMethod == "mixed") {
                 item {
                     PointsSummaryCard(
                         pointsBefore = pointsBefore,
@@ -156,6 +183,7 @@ fun ConfirmationScreen(
             item {
                 Box(modifier = Modifier.height(24.dp))
             }
+        }
         }
 
         // Footer con botones
