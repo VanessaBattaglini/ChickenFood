@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -256,16 +257,25 @@ fun MainScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        val lazyListState = rememberLazyListState()
+        
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .safeDrawingPadding()
-                .background(colorResource(R.color.darkBrown)),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            contentPadding = PaddingValues(
-                bottom = 24.dp
-            )
+                .background(colorResource(R.color.darkBrown))
+                .scrollIndicatorModifier(lazyListState)
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(R.color.darkBrown)),
+                state = lazyListState,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                contentPadding = PaddingValues(
+                    bottom = 24.dp
+                )
         ) {
             item {
                 SearchBar(
@@ -324,6 +334,7 @@ fun MainScreen(
                     }
                 )
             }
+        }
         }
     }
 }
