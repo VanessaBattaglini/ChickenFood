@@ -15,3 +15,8 @@
 local.properties
 .documentation
 .idea
+
+# Documentation and Kiro specs (excluded from version control)
+/documentation
+/.kiro/specs
+!README.md

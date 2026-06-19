@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -105,6 +109,7 @@ fun OrderDetailScreen(
 ) {
     val formatter = SimpleDateFormat("dd MMM, yyyy HH:mm", Locale("es", "ES"))
     val dateString = formatter.format(Date(orderTimestamp))
+    val lazyListState = rememberLazyListState()  // ✨ NUEVO: State para scroll indicator
 
     Column(
         modifier = Modifier
@@ -144,33 +149,92 @@ fun OrderDetailScreen(
         }
 
         // Content
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+                .drawWithCache {  // ✨ NUEVO: Inline scroll indicator
+                    val layoutInfo = lazyListState.layoutInfo
+                    val isScrollable = layoutInfo.totalItemsCount > 0 && 
+                        layoutInfo.visibleItemsInfo.isNotEmpty() &&
+                        layoutInfo.visibleItemsInfo.last().index < layoutInfo.totalItemsCount - 1
+                    
+                    val scrollProgress = if (layoutInfo.totalItemsCount == 0) {
+                        0f
+                    } else {
+                        val visibleItemsInfo = layoutInfo.visibleItemsInfo
+                        if (visibleItemsInfo.isEmpty()) {
+                            0f
+                        } else {
+                            val firstVisibleIndex = visibleItemsInfo.first().index.toFloat()
+                            val totalItems = layoutInfo.totalItemsCount.toFloat()
+                            (firstVisibleIndex / (totalItems - 1)).coerceIn(0f, 1f)
+                        }
+                    }
+                    
+                    val indicatorColor = if (isScrollable) 
+                        Color(0xFF00FF00).copy(alpha = 0.9f)
+                    else 
+                        Color.Transparent
+                    
+                    onDrawWithContent {
+                        drawContent()
+                        
+                        if (isScrollable) {
+                            val indicatorWidth = 12f
+                            val indicatorHeight = size.height * 0.12f
+                            val thumbY = scrollProgress * (size.height - indicatorHeight)
+                            
+                            // Draw faint background track
+                            drawRect(
+                                color = Color(0xFF00FF00).copy(alpha = 0.15f),
+                                topLeft = Offset(
+                                    x = size.width - indicatorWidth - 2,
+                                    y = 0f
+                                ),
+                                size = Size(indicatorWidth, size.height)
+                            )
+                            
+                            // Draw scroll indicator thumb
+                            drawRect(
+                                color = indicatorColor,
+                                topLeft = Offset(
+                                    x = size.width - indicatorWidth - 2,
+                                    y = thumbY
+                                ),
+                                size = Size(indicatorWidth, indicatorHeight)
+                            )
+                        }
+                    }
+                }
         ) {
-            // Orden Header
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+            LazyColumn(
+                state = lazyListState,  // ✨ NUEVO: State para scroll tracking
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                // Orden Header
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = "Orden #$orderId",
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Orden #$orderId",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -341,6 +405,7 @@ fun OrderDetailScreen(
 
             item {
                 Box(modifier = Modifier.height(24.dp))
+            }
             }
         }
 

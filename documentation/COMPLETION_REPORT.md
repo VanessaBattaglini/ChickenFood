@@ -505,18 +505,18 @@ Del raíz (movidos a documentation/ o integrados):
 ## 🎓 Learning Resources Disponibles
 
 ### Principiantes
-- [README.md](README.md) - Visión general
+- [README.md](../README.md) - Visión general
 - [VISUAL_GUIDE.md](VISUAL_GUIDE.md) - Guía visual
-- [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md) - Setup
+- [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md) - Setup
 
 ### Intermedios
 - [INDEX.md](INDEX.md) - Navegación
-- [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md) - Arquitectura
-- [documentation/FEATURES.md](documentation/FEATURES.md) - Features
+- [documentation/ARCHITECTURE.md](ARCHITECTURE.md) - Arquitectura
+- [documentation/FEATURES.md](FEATURES.md) - Features
 
 ### Avanzados
-- [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md) - Sistema puntos
-- [documentation/FIX_POINTS_LOADING_ISSUE.md](documentation/FIX_POINTS_LOADING_ISSUE.md) - Deep dive
+- [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md) - Sistema puntos
+- [documentation/FIX_POINTS_LOADING_ISSUE.md](FIX_POINTS_LOADING_ISSUE.md) - Deep dive
 - [documentation/TEST_POINTS_SYSTEM.md](documentation/TEST_POINTS_SYSTEM.md) - Testing avanzado
 
 ---

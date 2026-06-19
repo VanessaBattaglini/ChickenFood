@@ -95,6 +95,7 @@ class CheckoutActivity : BaseActivity() {
                         cartItems = cartItems,
                         cartTotal = cartTotal,
                         userPoints = userPoints,  // ✅ Puntos en tiempo real del ViewModel
+                        isUserRegistered = !currentUserId.isNullOrEmpty(),  // ✨ NUEVO: Pasar si el usuario está registrado
                         onBackClick = { finish() },
                         onConfirmPayment = { method, cardData ->
                             Log.d(TAG, "Payment confirmed with method=$method")
@@ -206,6 +207,7 @@ class CheckoutActivity : BaseActivity() {
                         pointsBefore = userPoints,
                         pointsChange = pointsChange,
                         pointsAfter = pointsAfter,
+                        isUserRegistered = !currentUserId.isNullOrEmpty(),  // ✨ NUEVO: Pasar si el usuario está registrado
                         onBackClick = {
                             Log.d(TAG, "Back to Dashboard clicked - clearing cart")
                             managmentCart.clearCart()

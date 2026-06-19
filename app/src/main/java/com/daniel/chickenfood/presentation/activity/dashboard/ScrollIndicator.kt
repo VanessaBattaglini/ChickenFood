@@ -51,7 +51,7 @@ fun scrollIndicatorModifier(lazyListState: LazyListState): Modifier {
         }
         
         val indicatorColor = if (isScrollable) 
-            Color(0xFFFF9500).copy(alpha = 0.7f)  // Orange with transparency
+            Color(0xFF00FF00).copy(alpha = 0.9f)  // Bright lime green with high visibility
         else 
             Color.Transparent
         
@@ -59,9 +59,19 @@ fun scrollIndicatorModifier(lazyListState: LazyListState): Modifier {
             drawContent()
             
             if (isScrollable) {
-                val indicatorWidth = 4f
+                val indicatorWidth = 8f  // Increased from 4dp to 8dp for better visibility
                 val indicatorHeight = size.height * 0.15f
                 val thumbY = scrollProgress * (size.height - indicatorHeight)
+                
+                // Draw faint background track
+                drawRect(
+                    color = Color(0xFF00FF00).copy(alpha = 0.15f),
+                    topLeft = Offset(
+                        x = size.width - indicatorWidth - 4,
+                        y = 0f
+                    ),
+                    size = Size(indicatorWidth, size.height)
+                )
                 
                 // Draw scroll indicator thumb
                 drawRect(

@@ -31,6 +31,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -56,6 +59,7 @@ fun SearchBar(
 ) {
     val searchResults by viewModel.searchResults.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
+    val lazyListState = rememberLazyListState()  // ✨ NUEVO: State para scroll indicator
     
     var text by rememberSaveable {
         mutableStateOf("")
@@ -167,18 +171,70 @@ fun SearchBar(
                             )
                         }
                         else -> {
-                            val searchLazyListState = rememberLazyListState()
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(max = 300.dp)
-                                    .scrollIndicatorModifier(searchLazyListState)
+                                    .drawWithCache {  // ✨ NUEVO: Inline scroll indicator
+                                        val layoutInfo = lazyListState.layoutInfo
+                                        val isScrollable = layoutInfo.totalItemsCount > 0 && 
+                                            layoutInfo.visibleItemsInfo.isNotEmpty() &&
+                                            layoutInfo.visibleItemsInfo.last().index < layoutInfo.totalItemsCount - 1
+                                        
+                                        val scrollProgress = if (layoutInfo.totalItemsCount == 0) {
+                                            0f
+                                        } else {
+                                            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+                                            if (visibleItemsInfo.isEmpty()) {
+                                                0f
+                                            } else {
+                                                val firstVisibleIndex = visibleItemsInfo.first().index.toFloat()
+                                                val totalItems = layoutInfo.totalItemsCount.toFloat()
+                                                (firstVisibleIndex / (totalItems - 1)).coerceIn(0f, 1f)
+                                            }
+                                        }
+                                        
+                                        val indicatorColor = if (isScrollable) 
+                                            Color(0xFF00FF00).copy(alpha = 0.9f)
+                                        else 
+                                            Color.Transparent
+                                        
+                                        onDrawWithContent {
+                                            drawContent()
+                                            
+                                            if (isScrollable) {
+                                                val indicatorWidth = 12f
+                                                val indicatorHeight = size.height * 0.12f
+                                                val thumbY = scrollProgress * (size.height - indicatorHeight)
+                                                
+                                                // Draw faint background track
+                                                drawRect(
+                                                    color = Color(0xFF00FF00).copy(alpha = 0.15f),
+                                                    topLeft = Offset(
+                                                        x = size.width - indicatorWidth - 2,
+                                                        y = 0f
+                                                    ),
+                                                    size = Size(indicatorWidth, size.height)
+                                                )
+                                                
+                                                // Draw scroll indicator thumb
+                                                drawRect(
+                                                    color = indicatorColor,
+                                                    topLeft = Offset(
+                                                        x = size.width - indicatorWidth - 2,
+                                                        y = thumbY
+                                                    ),
+                                                    size = Size(indicatorWidth, indicatorHeight)
+                                                )
+                                            }
+                                        }
+                                    }
                             ) {
                                 LazyColumn(
+                                    state = lazyListState,  // ✨ NUEVO: State para scroll tracking
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .heightIn(max = 300.dp),
-                                    state = searchLazyListState
+                                        .heightIn(max = 300.dp)
                                 ) {
                                     items(searchResults) { food ->
                                         SearchResultItem(

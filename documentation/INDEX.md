@@ -7,13 +7,13 @@ Bienvenido a SuperCrunchy Pollo. Este es tu punto de entrada a toda la informaci
 ## 🚀 Comienza Aquí
 
 ### Para Nuevos Usuarios
-1. 📱 **[README.md](README.md)** - Visión general de la app
+1. 📱 **[README.md](../README.md)** - Visión general de la app
 2. 🎬 **[Primeros Pasos](#primeros-pasos)** - Cómo comenzar
 
 ### Para Desarrolladores
-1. ⚡ **[documentation/README.md](documentation/README.md)** - Índice de documentación
-2. 🏗️ **[documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md)** - Arquitectura técnica
-3. ✨ **[documentation/FEATURES.md](documentation/FEATURES.md)** - Características
+1. ⚡ **[documentation/README.md](README.md)** - Índice de documentación
+2. 🏗️ **[documentation/ARCHITECTURE.md](ARCHITECTURE.md)** - Arquitectura técnica
+3. ✨ **[documentation/FEATURES.md](FEATURES.md)** - Características
 
 ---
 
@@ -22,27 +22,27 @@ Bienvenido a SuperCrunchy Pollo. Este es tu punto de entrada a toda la informaci
 ### Guías Técnicas
 | Documento | Descripción |
 |-----------|-----------|
-| [README.md](README.md) | Visión general de la app |
-| [documentation/README.md](documentation/README.md) | Índice de documentación técnica |
-| [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md) | Arquitectura del sistema |
-| [documentation/FEATURES.md](documentation/FEATURES.md) | Todas las características |
-| [documentation/CHANGELOG.md](documentation/CHANGELOG.md) | Historial de cambios |
+| [README.md](../README.md) | Visión general de la app |
+| [documentation/README.md](README.md) | Índice de documentación técnica |
+| [documentation/ARCHITECTURE.md](ARCHITECTURE.md) | Arquitectura del sistema |
+| [documentation/FEATURES.md](FEATURES.md) | Todas las características |
+| [documentation/CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
 
 ### Guías Específicas
 | Documento | Tema |
 |-----------|------|
-| [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md) | Setup inicial |
-| [documentation/02_AUTENTICACION.md](documentation/02_AUTENTICACION.md) | Firebase Auth |
-| [documentation/04_BUSCADOR.md](documentation/04_BUSCADOR.md) | Búsqueda |
-| [documentation/05_CARRITO_COMPRAS.md](documentation/05_CARRITO_COMPRAS.md) | Carrito |
-| [documentation/10_TARJETAS_PRUEBA.md](documentation/10_TARJETAS_PRUEBA.md) | Test Cards |
+| [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md) | Setup inicial |
+| [documentation/02_AUTENTICACION.md](02_AUTENTICACION.md) | Firebase Auth |
+| [documentation/04_BUSCADOR.md](04_BUSCADOR.md) | Búsqueda |
+| [documentation/05_CARRITO_COMPRAS.md](05_CARRITO_COMPRAS.md) | Carrito |
+| [documentation/10_TARJETAS_PRUEBA.md](10_TARJETAS_PRUEBA.md) | Test Cards |
 
 ### Sistema de Puntos (v3.5)
 | Documento | Descripción |
 |-----------|-----------|
-| [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md) | Sistema completo |
-| [documentation/POINTS_USAGE_FLOW.md](documentation/POINTS_USAGE_FLOW.md) | Flujo de uso |
-| [documentation/FIX_POINTS_LOADING_ISSUE.md](documentation/FIX_POINTS_LOADING_ISSUE.md) | Fix v3.5 |
+| [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md) | Sistema completo |
+| [documentation/POINTS_USAGE_FLOW.md](POINTS_USAGE_FLOW.md) | Flujo de uso |
+| [documentation/FIX_POINTS_LOADING_ISSUE.md](FIX_POINTS_LOADING_ISSUE.md) | Fix v3.5 |
 | [documentation/TEST_POINTS_SYSTEM.md](documentation/TEST_POINTS_SYSTEM.md) | Testing guide |
 
 ---
@@ -50,30 +50,30 @@ Bienvenido a SuperCrunchy Pollo. Este es tu punto de entrada a toda la informaci
 ## 🎯 Busca por Tema
 
 ### Autenticación & Usuarios
-- Entender Firebase Auth ➜ [documentation/02_AUTENTICACION.md](documentation/02_AUTENTICACION.md)
-- Configurar login/signup ➜ [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md)
+- Entender Firebase Auth ➜ [documentation/02_AUTENTICACION.md](02_AUTENTICACION.md)
+- Configurar login/signup ➜ [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md)
 
 ### Productos & Búsqueda
-- Buscar productos ➜ [documentation/04_BUSCADOR.md](documentation/04_BUSCADOR.md)
-- Explorar categorías ➜ [documentation/FEATURES.md](documentation/FEATURES.md)
+- Buscar productos ➜ [documentation/04_BUSCADOR.md](04_BUSCADOR.md)
+- Explorar categorías ➜ [documentation/FEATURES.md](FEATURES.md)
 
 ### Carrito & Checkout
-- Gestionar carrito ➜ [documentation/05_CARRITO_COMPRAS.md](documentation/05_CARRITO_COMPRAS.md)
-- Procesar pago ➜ [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md)
+- Gestionar carrito ➜ [documentation/05_CARRITO_COMPRAS.md](05_CARRITO_COMPRAS.md)
+- Procesar pago ➜ [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md)
 
 ### Sistema de Puntos
-- Acumular puntos ➜ [documentation/POINTS_USAGE_FLOW.md](documentation/POINTS_USAGE_FLOW.md)
-- Usar puntos como descuento ➜ [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md)
-- Verificar carga de puntos ➜ [documentation/FIX_POINTS_LOADING_ISSUE.md](documentation/FIX_POINTS_LOADING_ISSUE.md)
+- Acumular puntos ➜ [documentation/POINTS_USAGE_FLOW.md](POINTS_USAGE_FLOW.md)
+- Usar puntos como descuento ➜ [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md)
+- Verificar carga de puntos ➜ [documentation/FIX_POINTS_LOADING_ISSUE.md](FIX_POINTS_LOADING_ISSUE.md)
 
 ### Testing
-- Tarjetas de prueba ➜ [documentation/10_TARJETAS_PRUEBA.md](documentation/10_TARJETAS_PRUEBA.md)
+- Tarjetas de prueba ➜ [documentation/10_TARJETAS_PRUEBA.md](10_TARJETAS_PRUEBA.md)
 - Test cases completos ➜ [documentation/TEST_POINTS_SYSTEM.md](documentation/TEST_POINTS_SYSTEM.md)
 
 ### Desarrollo
-- Arquitectura del código ➜ [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md)
-- Todas las features ➜ [documentation/FEATURES.md](documentation/FEATURES.md)
-- Historial de cambios ➜ [documentation/CHANGELOG.md](documentation/CHANGELOG.md)
+- Arquitectura del código ➜ [documentation/ARCHITECTURE.md](ARCHITECTURE.md)
+- Todas las features ➜ [documentation/FEATURES.md](FEATURES.md)
+- Historial de cambios ➜ [documentation/CHANGELOG.md](CHANGELOG.md)
 
 ---
 
@@ -148,7 +148,7 @@ PUNTOS SE GASTAN
 CICLO CONTINÚA
 ```
 
-Ver detalles: [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md)
+Ver detalles: [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md)
 
 ---
 
@@ -213,16 +213,16 @@ v3.5 ✅
 ## 🆘 Solución Rápida
 
 ### Problema: Los puntos no se cargan
-**Solución**: Espera 2-3 segundos, revisa [documentation/FIX_POINTS_LOADING_ISSUE.md](documentation/FIX_POINTS_LOADING_ISSUE.md)
+**Solución**: Espera 2-3 segundos, revisa [documentation/FIX_POINTS_LOADING_ISSUE.md](FIX_POINTS_LOADING_ISSUE.md)
 
 ### Problema: App no compila
-**Solución**: Lee [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md)
+**Solución**: Lee [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md)
 
 ### Problema: No puedo pagar
-**Solución**: Revisa tarjetas de prueba en [documentation/10_TARJETAS_PRUEBA.md](documentation/10_TARJETAS_PRUEBA.md)
+**Solución**: Revisa tarjetas de prueba en [documentation/10_TARJETAS_PRUEBA.md](10_TARJETAS_PRUEBA.md)
 
 ### Problema: ¿Dónde encuentro X?
-**Solución**: Usa **Ctrl+F** en este archivo para buscar, o ve a [documentation/README.md](documentation/README.md)
+**Solución**: Usa **Ctrl+F** en este archivo para buscar, o ve a [documentation/README.md](README.md)
 
 ---
 
@@ -236,34 +236,34 @@ v3.5 ✅
 ## 📝 Quick Links
 
 ### Más Importante
-1. [README.md](README.md) - Visión general
-2. [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md) - Cómo funciona
-3. [documentation/FEATURES.md](documentation/FEATURES.md) - Qué puede hacer
+1. [README.md](../README.md) - Visión general
+2. [documentation/ARCHITECTURE.md](ARCHITECTURE.md) - Cómo funciona
+3. [documentation/FEATURES.md](FEATURES.md) - Qué puede hacer
 
 ### Desarrollo
-1. [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md) - Setup
-2. [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md) - Puntos
+1. [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md) - Setup
+2. [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md) - Puntos
 3. [documentation/TEST_POINTS_SYSTEM.md](documentation/TEST_POINTS_SYSTEM.md) - Testing
 
 ### Referencias
-1. [documentation/CHANGELOG.md](documentation/CHANGELOG.md) - Historial
-2. [documentation/README.md](documentation/README.md) - Índice completo
-3. [documentation/FIX_POINTS_LOADING_ISSUE.md](documentation/FIX_POINTS_LOADING_ISSUE.md) - Último fix
+1. [documentation/CHANGELOG.md](CHANGELOG.md) - Historial
+2. [documentation/README.md](README.md) - Índice completo
+3. [documentation/FIX_POINTS_LOADING_ISSUE.md](FIX_POINTS_LOADING_ISSUE.md) - Último fix
 
 ---
 
 ## 🎓 Learning Path
 
 ### Para Usuarios
-1. Lee [README.md](README.md)
+1. Lee [README.md](../README.md)
 2. Explora la app
 3. Haz tu primer pedido
 
 ### Para Desarrolladores (0 → Hero)
-1. Lee [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md)
-2. Lee [documentation/01_INICIO_RAPIDO.md](documentation/01_INICIO_RAPIDO.md)
-3. Lee [documentation/FEATURES.md](documentation/FEATURES.md)
-4. Lee [documentation/PAYMENT_POINTS_SYSTEM.md](documentation/PAYMENT_POINTS_SYSTEM.md)
+1. Lee [documentation/ARCHITECTURE.md](ARCHITECTURE.md)
+2. Lee [documentation/01_INICIO_RAPIDO.md](01_INICIO_RAPIDO.md)
+3. Lee [documentation/FEATURES.md](FEATURES.md)
+4. Lee [documentation/PAYMENT_POINTS_SYSTEM.md](PAYMENT_POINTS_SYSTEM.md)
 5. Ejecuta tests en [documentation/TEST_POINTS_SYSTEM.md](documentation/TEST_POINTS_SYSTEM.md)
 6. Haz cambios y mantén la calidad
 
@@ -275,5 +275,5 @@ v3.5 ✅
 
 ---
 
-*¿Necesitas ayuda? Revisa el [README.md](README.md) o abre un issue en GitHub.*
+*¿Necesitas ayuda? Revisa el [README.md](../README.md) o abre un issue en GitHub.*
 

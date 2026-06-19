@@ -23,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,18 +41,69 @@ fun ItemsList(
     items: List<FoodModel>,
     onFoodClick: (FoodModel) -> Unit
 ) {
-    val itemsLazyListState = rememberLazyListState()
-
+    val lazyListState = rememberLazyListState()  // ✨ NUEVO: State para scroll indicator
+    
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .scrollIndicatorModifier(itemsLazyListState)
+            .drawWithCache {  // ✨ NUEVO: Inline scroll indicator
+                val layoutInfo = lazyListState.layoutInfo
+                val isScrollable = layoutInfo.totalItemsCount > 0 && 
+                    layoutInfo.visibleItemsInfo.isNotEmpty() &&
+                    layoutInfo.visibleItemsInfo.last().index < layoutInfo.totalItemsCount - 1
+                
+                val scrollProgress = if (layoutInfo.totalItemsCount == 0) {
+                    0f
+                } else {
+                    val visibleItemsInfo = layoutInfo.visibleItemsInfo
+                    if (visibleItemsInfo.isEmpty()) {
+                        0f
+                    } else {
+                        val firstVisibleIndex = visibleItemsInfo.first().index.toFloat()
+                        val totalItems = layoutInfo.totalItemsCount.toFloat()
+                        (firstVisibleIndex / (totalItems - 1)).coerceIn(0f, 1f)
+                    }
+                }
+                
+                val indicatorColor = if (isScrollable) 
+                    Color(0xFF00FF00).copy(alpha = 0.9f)
+                else 
+                    Color.Transparent
+                
+                onDrawWithContent {
+                    drawContent()
+                    
+                    if (isScrollable) {
+                        val indicatorWidth = 12f
+                        val indicatorHeight = size.height * 0.12f
+                        val thumbY = scrollProgress * (size.height - indicatorHeight)
+                        
+                        // Draw faint background track
+                        drawRect(
+                            color = Color(0xFF00FF00).copy(alpha = 0.15f),
+                            topLeft = Offset(
+                                x = size.width - indicatorWidth - 2,
+                                y = 0f
+                            ),
+                            size = Size(indicatorWidth, size.height)
+                        )
+                        
+                        // Draw scroll indicator thumb
+                        drawRect(
+                            color = indicatorColor,
+                            topLeft = Offset(
+                                x = size.width - indicatorWidth - 2,
+                                y = thumbY
+                            ),
+                            size = Size(indicatorWidth, indicatorHeight)
+                        )
+                    }
+                }
+            }
     ) {
         LazyColumn(
-            state = itemsLazyListState,
+            state = lazyListState,  // ✨ NUEVO: State para scroll tracking
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             itemsIndexed(

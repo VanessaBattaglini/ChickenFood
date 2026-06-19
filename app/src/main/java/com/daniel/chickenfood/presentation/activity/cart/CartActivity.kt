@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -45,14 +49,14 @@ import coil.compose.AsyncImage
 import com.daniel.chickenfood.R
 import com.daniel.chickenfood.domain.model.FoodModel
 import com.daniel.chickenfood.domain.model.OrderItemModel
+import com.daniel.chickenfood.helper.AuthHelper
 import com.daniel.chickenfood.helper.ChangeNumberItemsListener
 import com.daniel.chickenfood.helper.ManagmentCart
 import com.daniel.chickenfood.presentation.activity.BaseActivity
 import com.daniel.chickenfood.presentation.activity.checkout.CheckoutActivity
 import com.daniel.chickenfood.presentation.activity.dashboard.MainActivity
-import com.daniel.chickenfood.presentation.activity.dashboard.scrollIndicatorModifier
+
 import com.daniel.chickenfood.presentation.viewModel.RewardsViewModel
-import com.daniel.chickenfood.helper.AuthHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "CartActivity"
@@ -147,6 +151,7 @@ fun CartScreen(
     var totalPrice by remember { mutableStateOf(managmentCart.getTotalFee()) }
     var showClearDialog by remember { mutableStateOf(false) }
     var refreshTrigger by remember { mutableStateOf(0) }  // Trigger para forzar recomposición
+    val lazyListState = rememberLazyListState()  // ✨ NUEVO: State para scroll indicator
     
     // ✨ NUEVO: Observar puntos desde RewardsViewModel
     val userPoints by rewardsViewModel.pointsBalance.collectAsState()
@@ -252,21 +257,17 @@ fun CartScreen(
                 }
             }
         } else {
-            // Cart Items
-            val lazyListState = rememberLazyListState()
-            
+            // Cart Items - Box con scroll indicator dinámico
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .scrollIndicatorModifier(lazyListState)
             ) {
                 LazyColumn(
+                    state = lazyListState,  // ✨ State para scroll tracking
                     modifier = Modifier
-                        .weight(1f)
                         .fillMaxWidth(),
-                    state = lazyListState,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     itemsIndexed(cartItems) { index, item ->
@@ -275,6 +276,52 @@ fun CartScreen(
                             index = index,
                             managmentCart = managmentCart,
                             changeListener = changeListener
+                        )
+                    }
+                }
+                
+                // ✨ NUEVO: Canvas overlay para scroll indicator dinámico
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .matchParentSize()
+                ) {
+                    val layoutInfo = lazyListState.layoutInfo
+                    val isScrollable = layoutInfo.totalItemsCount > 0 && 
+                        layoutInfo.visibleItemsInfo.isNotEmpty() &&
+                        layoutInfo.visibleItemsInfo.last().index < layoutInfo.totalItemsCount - 1
+                    
+                    if (isScrollable) {
+                        val scrollProgress = if (layoutInfo.totalItemsCount == 0) {
+                            0f
+                        } else {
+                            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+                            if (visibleItemsInfo.isEmpty()) {
+                                0f
+                            } else {
+                                val firstVisibleIndex = visibleItemsInfo.first().index.toFloat()
+                                val totalItems = layoutInfo.totalItemsCount.toFloat()
+                                (firstVisibleIndex / (totalItems - 1)).coerceIn(0f, 1f)
+                            }
+                        }
+                        
+                        val indicatorColor = Color(0xFF00FF00).copy(alpha = 0.9f)
+                        val indicatorWidth = 12f
+                        val indicatorHeight = size.height * 0.12f
+                        val thumbY = scrollProgress * (size.height - indicatorHeight)
+                        
+                        // Draw track
+                        drawRect(
+                            color = Color(0xFF00FF00).copy(alpha = 0.15f),
+                            topLeft = Offset(x = size.width - indicatorWidth - 2, y = 0f),
+                            size = Size(indicatorWidth, size.height)
+                        )
+                        
+                        // Draw thumb
+                        drawRect(
+                            color = indicatorColor,
+                            topLeft = Offset(x = size.width - indicatorWidth - 2, y = thumbY),
+                            size = Size(indicatorWidth, indicatorHeight)
                         )
                     }
                 }
