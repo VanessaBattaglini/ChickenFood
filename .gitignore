@@ -15,10 +15,12 @@
 local.properties
 .documentation/
 /documentation/
+documentation/
 .idea
 
 # Documentation and Kiro specs (excluded from version control)
 /documentation
 /.kiro/specs
-.kiro/
+.kiro/specs
+.kotlin/errors
 !README.md
