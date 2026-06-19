@@ -13,10 +13,12 @@
 .externalNativeBuild
 .cxx
 local.properties
-.documentation
+.documentation/
+/documentation/
 .idea
 
 # Documentation and Kiro specs (excluded from version control)
 /documentation
 /.kiro/specs
+.kiro/
 !README.md
